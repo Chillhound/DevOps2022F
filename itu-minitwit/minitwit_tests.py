@@ -58,7 +58,7 @@ class MiniTwitTestCase(unittest.TestCase):
         rv = self.app.post('/add_message', data={'text': text},
                            follow_redirects=True)
         if text:
-            assert 'Your message was recorded' in rv.data
+            assert b'Your message was recorded' in rv.data
         return rv
 
     # testing functions
@@ -96,8 +96,8 @@ class MiniTwitTestCase(unittest.TestCase):
         self.add_message('test message 1')
         self.add_message('<test message 2>')
         rv = self.app.get('/')
-        assert 'test message 1' in rv.data
-        assert '&lt;test message 2&gt;' in rv.data
+        assert b'test message 1' in rv.data
+        assert b'&lt;test message 2&gt;' in rv.data
 
     def test_timelines(self):
         """Make sure that timelines work"""
