@@ -12,5 +12,7 @@ namespace Domain.Models
         public string UserName { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
+        public ICollection<User> Followers { get; set; }
+        public ICollection<Message> Messages { get; set; }
     }
 }
