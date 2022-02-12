@@ -12,7 +12,7 @@ namespace MiniTwit_API.Controllers
             this.context = context;
         }
         [HttpGet]
-        public ActionResult<List<Message>> GetUserById(int limit)
+        public ActionResult<List<Message>> PublicTimeline(int limit)
         {
             return context.Messages.OrderByDescending(x => x.PubDate).Take(limit).ToList();
         }

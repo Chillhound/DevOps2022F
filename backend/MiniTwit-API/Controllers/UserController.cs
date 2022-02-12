@@ -24,12 +24,16 @@ namespace MiniTwit_API.Controllers
         //{
         //   return await context.Users.FindAsync(id);
         //}
-                 
 
+        [Authorize]
         [HttpGet("Timeline")]
-        public ActionResult<List<Message>> GetMessageTimeline(int id, int limit)
+        public ActionResult<List<Message>> GetMessageTimeline(int limit)
         {
-            User user = context.Users.Find(id);
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            int userId = int.Parse(identity.FindFirst("Id").Value);
+
+            User user = context.Users.Find(userId);
 
             List<Message> messages = new List<Message>();
 
@@ -47,12 +51,34 @@ namespace MiniTwit_API.Controllers
 
         [Authorize]
         [HttpGet ("UserMessages")]
-        public ActionResult<List<Message>> GetMessages(int id)
+        public ActionResult<List<Message>> GetMessages()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             int userId = int.Parse(identity.FindFirst("Id").Value);
-            return context.Users.Find(id).Messages.ToList();
+            return context.Users.Find(userId).Messages.ToList();
+        }
+
+        [Authorize]
+        [HttpGet("Follow")]
+        public ActionResult<List<Message>> Follow(string username)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            int userId = int.Parse(identity.FindFirst("Id").Value);
+            return null;
+           // return context.Users.Find(id).Messages.ToList();
+        }
+
+        [Authorize]
+        [HttpGet("Unfollow")]
+        public ActionResult<List<Message>> Unfollow(string username)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            int userId = int.Parse(identity.FindFirst("Id").Value);
+            return null;
+            // return context.Users.Find(id).Messages.ToList();
         }
 
     }
