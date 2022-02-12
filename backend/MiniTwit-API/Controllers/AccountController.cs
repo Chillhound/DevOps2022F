@@ -37,6 +37,7 @@ namespace MiniTwit_API.Controllers
                 Email = userDTO.Email,
                 UserName = userDTO.UserName,
                 PasswordHash = hashed
+                
             };
 
 

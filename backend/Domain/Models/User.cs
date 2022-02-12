@@ -12,8 +12,8 @@ namespace Domain.Models
         public string UserName { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
-        public ICollection<Follower> Following { get; set; }
-        public ICollection<Follower> Followers { get; set; }
-        public ICollection<Message> Messages { get; set; }
+        public virtual ICollection<Follower> Following { get; set; }
+        public virtual ICollection<Follower> Followers { get; set; }
+        public virtual ICollection<Message> Messages { get; set; }
     }
 }

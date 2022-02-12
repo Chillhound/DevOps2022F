@@ -38,14 +38,21 @@ namespace MiniTwit_API.Controllers
 
             List<Message> messages = new List<Message>();
 
-            messages.AddRange(user.Messages.Where(x => x.Flagged == 0).ToList());
-    
-            foreach (Follower x in user.Following)
-            {
-                User FollowingUser = context.Users.Find(x.WhoId);
-                var mes = FollowingUser.Messages.Where(m => m.Flagged == 0).ToList();
+            
+            if (user.Messages != null)
+            messages.AddRange(context.Messages.Where(m => m.Flagged == 0 && m.AuthorId == userId).ToList());
 
-                messages.AddRange(mes);
+            if (user.Following != null)
+            {
+                var FollowingUserList = user.Following.Select(x => x.Whom);
+
+                foreach (User FollowingUser in FollowingUserList)
+                {
+
+                    if (FollowingUser.Messages != null)
+                        messages.AddRange(context.Messages.Where(m => m.Flagged == 0 && m.AuthorId == FollowingUser.UserId).ToList());
+
+                }
             }
             return messages.OrderByDescending(x => x.PubDate).Take(limit).ToList();
         }
@@ -76,9 +83,9 @@ namespace MiniTwit_API.Controllers
                 Who = context.Users.Find(userId),
                 Whom = FollowUser
             };
-
-            
-            context.Users.Find(userId).Following.Add(newRelation);
+            var user = context.Users.Find(userId);
+            if (user.Following == null) { user.Following = new List<Follower>(); }
+            user.Following.Add(newRelation);
             context.SaveChanges();
             return Ok();
         }
@@ -91,7 +98,7 @@ namespace MiniTwit_API.Controllers
 
             int userId = int.Parse(identity.FindFirst("Id").Value);
             var FollowingUser = context.Users.Where(e => e.UserName == username);
-
+           
             var relation = context.Users.Find(userId).Following.Where(e => e.Whom == FollowingUser).FirstOrDefault();
             context.Users.Find(userId).Following.Remove(relation);
             context.SaveChanges();

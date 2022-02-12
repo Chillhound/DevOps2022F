@@ -1,5 +1,6 @@
 ﻿using DataAccess;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -20,23 +21,24 @@ namespace MiniTwit_API.Controllers
             return context.Messages.OrderByDescending(x => x.PubDate).Take(limit).ToList();
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult<List<Message>> Post(string messageText)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             int userId = int.Parse(identity.FindFirst("Id").Value);
-
             Message message = new Message
             {
                 PubDate = DateTime.Now,
                 Flagged = 0,
-                Author = context.Users.Find(userId),
                 AuthorId = userId,
                 Text = messageText
             };
 
-            context.Messages.Add(message);
+            var user = context.Users.Find(userId);
+            if(user.Messages == null) { user.Messages = new List<Message>(); }
+            user.Messages.Add(message);
             context.SaveChanges();
 
             return Ok(message);
