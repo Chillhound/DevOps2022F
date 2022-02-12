@@ -29,11 +29,7 @@ namespace MiniTwit_API.Controllers
         [HttpGet("Timeline")]
         public ActionResult<List<Message>> GetMessageTimeline(int limit)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-
-            int userId = int.Parse(identity.FindFirst("Id").Value);
-
-            User user = context.Users.Find(userId);
+            User user = context.Users.Find(id);
 
             List<Message> messages = new List<Message>();
 
