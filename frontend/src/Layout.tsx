@@ -19,7 +19,7 @@ const Layout: React.FC = ({ children }) => (
       <div className="body">{children}</div>
       <div className="footer">
         MiniTwit &mdash; A{" "}
-        <i style={{ textDecoration: "line-through" }}>Flask</i> Application
+        <i style={{ textDecoration: "line-through" }}>!Flask</i> Application
       </div>
     </div>
   </>
