@@ -30,7 +30,7 @@ namespace MiniTwit_API.Controllers
         public ActionResult<List<Message>> GetMessageTimeline(int id, int limit)
         {
             User user = context.Users.Find(id);
-
+            if (user == null) return BadRequest();
             List<Message> messages = new List<Message>();
 
             messages.AddRange(user.Messages.Where(x => x.Flagged == 0).ToList());
