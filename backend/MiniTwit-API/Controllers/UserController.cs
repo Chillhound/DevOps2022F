@@ -28,14 +28,14 @@ namespace MiniTwit_API.Controllers
             List<Message> messages = new List<Message>();
 
             messages.AddRange(user.Messages.Where(x => x.Flagged == 0).ToList());
-
-            foreach (var x in user.Followers)
+    
+            foreach (Follower x in user.Following)
             {
-                var mes = x.Messages.Where(m => m.Flagged == 0).ToList();
+                User FollowingUser = context.Users.Find(x.WhoId);
+                var mes = FollowingUser.Messages.Where(m => m.Flagged == 0).ToList();
 
                 messages.AddRange(mes);
             }
-
             return messages.OrderByDescending(x => x.PubDate).Take(limit).ToList();
         }
 
