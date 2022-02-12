@@ -3,6 +3,7 @@ using Domain.DTO;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace MiniTwit_API.Controllers
 {
@@ -48,7 +49,9 @@ namespace MiniTwit_API.Controllers
         [HttpGet ("UserMessages")]
         public ActionResult<List<Message>> GetMessages(int id)
         {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
 
+            int userId = int.Parse(identity.FindFirst("Id").Value);
             return context.Users.Find(id).Messages.ToList();
         }
 

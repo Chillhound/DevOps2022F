@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using MiniTwit_API.Service;
+using System.Text;
 
 namespace MiniTwit_API.Controllers
 {
@@ -60,19 +61,10 @@ namespace MiniTwit_API.Controllers
 
         private static string GetHash(string password)
         {
-            byte[] salt = new byte[128 / 8];
-            using (var rngCsp = new RNGCryptoServiceProvider())
-            {
-                rngCsp.GetNonZeroBytes(salt);
-            }
-            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-            password: password,
-            salt: salt,
-            prf: KeyDerivationPrf.HMACSHA256,
-            iterationCount: 100000,
-            numBytesRequested: 256 / 8));
-            Console.WriteLine($"Hashed: {hashed}");
-            return hashed;
+            var hmac = new HMACSHA512(Encoding.ASCII.GetBytes("secretkey"));
+
+            return Encoding.ASCII.GetString(hmac.ComputeHash(Encoding.ASCII.GetBytes(password)));
+           
         }
     }
 }
