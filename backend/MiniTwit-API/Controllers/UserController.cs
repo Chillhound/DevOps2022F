@@ -67,19 +67,35 @@ namespace MiniTwit_API.Controllers
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             int userId = int.Parse(identity.FindFirst("Id").Value);
-            return null;
-           // return context.Users.Find(id).Messages.ToList();
+            var FollowUser = context.Users.Where(e => e.UserName == username).FirstOrDefault();
+
+            var newRelation = new Follower
+            {
+                WhoId = userId,
+                WhomId = FollowUser.UserId,
+                Who = context.Users.Find(userId),
+                Whom = FollowUser
+            };
+
+            
+            context.Users.Find(userId).Following.Add(newRelation);
+            context.SaveChanges();
+            return Ok();
         }
 
         [Authorize]
         [HttpGet("Unfollow")]
-        public ActionResult<List<Message>> Unfollow(string username)
+        public ActionResult Unfollow(string username)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             int userId = int.Parse(identity.FindFirst("Id").Value);
-            return null;
-            // return context.Users.Find(id).Messages.ToList();
+            var FollowingUser = context.Users.Where(e => e.UserName == username);
+
+            var relation = context.Users.Find(userId).Following.Where(e => e.Whom == FollowingUser).FirstOrDefault();
+            context.Users.Find(userId).Following.Remove(relation);
+            context.SaveChanges();
+            return Ok();
         }
 
     }
