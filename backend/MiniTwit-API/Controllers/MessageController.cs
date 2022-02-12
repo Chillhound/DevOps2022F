@@ -32,7 +32,7 @@ namespace MiniTwit_API.Controllers
             {
                 PubDate = DateTime.Now,
                 Flagged = 0,
-                AuthorId = userId,
+                UserId = userId,
                 Text = messageText
             };
 

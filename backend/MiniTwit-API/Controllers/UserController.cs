@@ -40,17 +40,17 @@ namespace MiniTwit_API.Controllers
 
             
             if (user.Messages != null)
-            messages.AddRange(context.Messages.Where(m => m.Flagged == 0 && m.AuthorId == userId).ToList());
+            messages.AddRange(context.Messages.Where(m => m.Flagged == 0 && m.UserId == userId).ToList());
 
             if (user.Following != null)
             {
-                var FollowingUserList = user.Following.Select(x => x.Whom);
+                var FollowingUserList = context.Followers.Where(x => x.WhoId == userId).Select(x => x.Whom);
 
                 foreach (User FollowingUser in FollowingUserList)
                 {
 
                     if (FollowingUser.Messages != null)
-                        messages.AddRange(context.Messages.Where(m => m.Flagged == 0 && m.AuthorId == FollowingUser.UserId).ToList());
+                        messages.AddRange(context.Messages.Where(m => m.Flagged == 0 && m.UserId == FollowingUser.UserId).ToList());
 
                 }
             }
@@ -64,7 +64,7 @@ namespace MiniTwit_API.Controllers
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             int userId = int.Parse(identity.FindFirst("Id").Value);
-            return context.Users.Find(userId).Messages.ToList();
+            return context.Messages.Where(m => m.UserId == userId).ToList();
         }
 
         [Authorize]
@@ -97,10 +97,10 @@ namespace MiniTwit_API.Controllers
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             int userId = int.Parse(identity.FindFirst("Id").Value);
-            var FollowingUser = context.Users.Where(e => e.UserName == username);
+            var FollowingUser = context.Users.Where(e => e.UserName == username).Select(x => x.UserId).FirstOrDefault();
            
-            var relation = context.Users.Find(userId).Following.Where(e => e.Whom == FollowingUser).FirstOrDefault();
-            context.Users.Find(userId).Following.Remove(relation);
+            var relation = context.Followers.Where(e => e.WhomId == FollowingUser && e.WhoId == userId).FirstOrDefault();
+            context.Followers.Remove(relation);
             context.SaveChanges();
             return Ok();
         }
