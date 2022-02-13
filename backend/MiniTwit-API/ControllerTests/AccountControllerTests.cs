@@ -1,4 +1,6 @@
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ControllerTests;
 public class AccountControllerTests
@@ -13,6 +15,20 @@ public class AccountControllerTests
         builder.UseSqlite(connection);
         var context = new MiniTwitContext(builder.Options);
         context.Database.EnsureCreated();
+
+        var hmac = new HMACSHA512(Encoding.ASCII.GetBytes("secretkey"));
+
+        var hashed =  Encoding.ASCII.GetString(hmac.ComputeHash(Encoding.ASCII.GetBytes("SikkerKode")));
+
+        var user = new User
+        {
+            UserName = "Testman",
+            Email = "test@test.dk",
+            PasswordHash = hashed
+        };
+
+        context.Users.Add(user);
+        context.SaveChanges();
         _controller = new AccountController(context);
     }
 
@@ -57,6 +73,7 @@ public class AccountControllerTests
         var result = _controller.Login(user).Result;
         var badResult = result as BadRequestObjectResult; 
         Assert.Equal(400, badResult.StatusCode);
+        Assert.Equal("Email and password needs to be provided", badResult.Value);
     }
 
     [Fact]
@@ -65,12 +82,28 @@ public class AccountControllerTests
         var user = new LoginDTO
         {
             Email = "test@test.dk",
-            Password = "BiteThePillow184"
+            Password = "SikkerKode"
+        };
+
+        var result = _controller.Login(user);
+
+        Assert.NotNull(result); //anything better to assert?
+    }
+
+    [Fact]
+    public void Login_given_user_with_wrong_password_returns_badrequest()
+    {
+        var user = new LoginDTO
+        {
+            Email = "test@test.dk",
+            Password = "UsikkerKode"
         };
 
         var result = _controller.Login(user).Result;
-        
-        //TODO needs seeding before we can progress
+        var badResult = result as BadRequestObjectResult;
+
+        Assert.Equal(400, badResult.StatusCode);
+        Assert.Equal("User not Found", badResult.Value);
     }
 
 }
