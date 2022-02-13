@@ -19,11 +19,15 @@ namespace MiniTwit_API.Controllers
             this.context = context;
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult<User>> GetUserById(int id)
-        //{
-        //   return await context.Users.FindAsync(id);
-        //}
+        [Authorize]
+        [HttpGet("Me")]
+        public async Task<ActionResult<User>> GetAuthenticatedUser()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            int userId = int.Parse(identity.FindFirst("Id").Value);
+
+            return await context.Users.FindAsync(userId);
+        }
 
         [Authorize]
         [HttpGet("Timeline")]
@@ -38,9 +42,9 @@ namespace MiniTwit_API.Controllers
 
             List<Message> messages = new List<Message>();
 
-            
+
             if (user.Messages != null)
-            messages.AddRange(context.Messages.Where(m => m.Flagged == 0 && m.UserId == userId).ToList());
+                messages.AddRange(context.Messages.Where(m => m.Flagged == 0 && m.UserId == userId).ToList());
 
             if (user.Following != null)
             {
@@ -58,7 +62,7 @@ namespace MiniTwit_API.Controllers
         }
 
         [Authorize]
-        [HttpGet ("UserMessages")]
+        [HttpGet("UserMessages")]
         public ActionResult<List<Message>> GetMessages()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -98,7 +102,7 @@ namespace MiniTwit_API.Controllers
 
             int userId = int.Parse(identity.FindFirst("Id").Value);
             var FollowingUser = context.Users.Where(e => e.UserName == username).Select(x => x.UserId).FirstOrDefault();
-           
+
             var relation = context.Followers.Where(e => e.WhomId == FollowingUser && e.WhoId == userId).FirstOrDefault();
             context.Followers.Remove(relation);
             context.SaveChanges();
