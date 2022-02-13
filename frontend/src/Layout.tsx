@@ -1,11 +1,12 @@
-import { setDefaultResultOrder } from "dns";
 import React from "react";
 import { Link } from "react-router-dom";
 import "./Layout.css";
+import flashContext from "./utils/flashContext";
 import userContext from "./utils/userContext";
 
 const Layout: React.FC = ({ children }) => {
   const { user, setUser } = React.useContext(userContext);
+  const { currentFlash } = React.useContext(flashContext);
 
   return (
     <>
@@ -32,9 +33,11 @@ const Layout: React.FC = ({ children }) => {
             </>
           )}
         </div>
-        <ul className="flashes">
-          <li>Test</li>
-        </ul>
+        {currentFlash ? (
+          <ul className="flashes">
+            <li>{currentFlash}</li>
+          </ul>
+        ) : null}
         <div className="body">{children}</div>
         <div className="footer">
           MiniTwit &mdash; A{" "}

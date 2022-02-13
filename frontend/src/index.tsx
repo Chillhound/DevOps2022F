@@ -3,12 +3,15 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import Router from "./Router";
+import { FlashContextProvider } from "./utils/flashContext";
 import { UserContextProvider } from "./utils/userContext";
 
 ReactDOM.render(
   <React.StrictMode>
     <UserContextProvider>
-      <Router />
+      <FlashContextProvider>
+        <Router />
+      </FlashContextProvider>
     </UserContextProvider>
   </React.StrictMode>,
   document.getElementById("root")
