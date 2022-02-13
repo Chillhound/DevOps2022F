@@ -1,4 +1,5 @@
 ﻿using DataAccess;
+using Domain.DTO;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +17,28 @@ namespace MiniTwit_API.Controllers
             this.context = context;
         }
         [HttpGet("PublicTimeline")]
-        public ActionResult<List<Message>> PublicTimeline(int limit)
+        public ActionResult<List<PublicMessageDTO>> PublicTimeline(int limit)
         {
-            return context.Messages.OrderByDescending(x => x.PubDate).Take(limit).ToList();
+
+            List<PublicMessageDTO> result = new List<PublicMessageDTO>();
+            List<Message> messages = context.Messages.OrderByDescending(x => x.PubDate).Take(limit).ToList();
+
+            foreach (Message message in messages)
+            {
+                User user = context.Users.Find(message.UserId);
+
+                result.Add(new PublicMessageDTO
+                {
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    MessageId = message.MessageId,
+                    Flagged = message.Flagged,
+                    PubDate = message.PubDate,
+                    Text = message.Text
+                });
+            }
+
+            return result;
         }
 
         [Authorize]
