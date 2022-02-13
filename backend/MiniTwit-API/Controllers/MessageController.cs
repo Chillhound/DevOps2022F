@@ -15,7 +15,7 @@ namespace MiniTwit_API.Controllers
         {
             this.context = context;
         }
-        [HttpGet ("PublicTimeline")]
+        [HttpGet("PublicTimeline")]
         public ActionResult<List<Message>> PublicTimeline(int limit)
         {
             return context.Messages.OrderByDescending(x => x.PubDate).Take(limit).ToList();
@@ -28,16 +28,17 @@ namespace MiniTwit_API.Controllers
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             int userId = int.Parse(identity.FindFirst("Id").Value);
+            var user = context.Users.Find(userId);
             Message message = new Message
             {
                 PubDate = DateTime.Now,
                 Flagged = 0,
                 UserId = userId,
-                Text = messageText
+                Text = messageText,
+                User = user,
             };
 
-            var user = context.Users.Find(userId);
-            if(user.Messages == null) { user.Messages = new List<Message>(); }
+            if (user.Messages == null) { user.Messages = new List<Message>(); }
             user.Messages.Add(message);
             context.SaveChanges();
 
