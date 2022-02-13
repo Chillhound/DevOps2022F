@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniTwit-API", "MiniTwit-AP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{BAE3CF2A-04F6-4D7A-AD66-660B9306B1B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{DA04CD40-DA14-4B4A-9FBB-884E013E7919}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{DA04CD40-DA14-4B4A-9FBB-884E013E7919}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerTests", "MiniTwit-API\ControllerTests\ControllerTests.csproj", "{4B414346-9D00-4E3B-A89E-F0A11A286D33}"
 EndProject
