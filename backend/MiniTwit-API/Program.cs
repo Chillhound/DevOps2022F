@@ -14,6 +14,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite")));
+builder.Services.AddScoped<MiniTwitContext, MiniTwitContext>();
+builder.Services.AddScoped<UserController, UserController>();
+builder.Services.AddScoped<AccountController, AccountController>();
+builder.Services.AddScoped<MessageController, MessageController>();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
