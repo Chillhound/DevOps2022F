@@ -15,15 +15,15 @@
   ```sh
   git clone https://github.com/Chillhound/DevOps2022F
   ```
-3. Go to the DevOps2022F/frontend folder and install npm packages
+2. Go to the DevOps2022F/frontend folder and install npm packages
   ```sh
   npm install
   ```
-5. Run the frontend from DevOps2022F/frontend
+3. Run the frontend from DevOps2022F/frontend
   ```sh
   npm run
   ```
-7. Run the backend in a seperate terminal from DevOps2022F/backend
+4. Run the backend in a seperate terminal from DevOps2022F/backend
   ```sh
   dotnet run
   ```
