@@ -11,10 +11,18 @@ const PersonalTimeline: React.FC = () => {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    fetch(`${baseUrl}/User/Timeline?limit=100`)
+    if (!user) {
+      return;
+    }
+    fetch(`${baseUrl}/User/Timeline?limit=100`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user.token,
+      },
+    })
       .then((res) => res.json())
       .then((data) => setTimelineMessages(data));
-  }, []);
+  }, [user]);
 
   React.useEffect(() => {
     if (!user) {

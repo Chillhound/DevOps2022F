@@ -10,6 +10,6 @@ namespace Domain.DTO
     public class UserMessagesDTO
     {
         public bool IsFollowing { get; set; }
-        public List<Message> messages { get; set; }
+        public List<PublicMessageDTO> messages { get; set; }
     }
 }

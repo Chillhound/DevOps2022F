@@ -14,7 +14,7 @@ const Router = () => (
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<PersonalTimeline />} />
         <Route path="/public" element={<PublicTimeline />} />
-        <Route path="/:userName" element={<UserTimeline />} />
+        <Route path="/:userId" element={<UserTimeline />} />
       </Routes>
     </Layout>
   </BrowserRouter>

@@ -8,13 +8,26 @@ import userContext from "./utils/userContext";
 const UserTimeline: React.FC = () => {
   const { user } = React.useContext(userContext);
   const [timelineMessages, setTimelineMessages] = React.useState<any[]>([]);
+  const [isFollowing, setIsFollowing] = React.useState(false);
   const params = useParams();
 
+  console.log(params.userId);
   React.useEffect(() => {
-    fetch(`${baseUrl}/User/UserMessages`)
+    if (!user) {
+      return;
+    }
+    fetch(`${baseUrl}/User/UserMessages?userId=${params.userId || 0}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user.token,
+      },
+    })
       .then((res) => res.json())
-      .then((data) => setTimelineMessages(data));
-  }, []);
+      .then((data) => {
+        setTimelineMessages(data.messages);
+        setIsFollowing(data.isFollowing);
+      });
+  }, [params.userId, user]);
 
   const handleFollowChange = React.useCallback(
     (shouldFollow: boolean) => {
@@ -34,18 +47,27 @@ const UserTimeline: React.FC = () => {
   return (
     <>
       <h2>User Timeline</h2>
+      {String(isFollowing)}
       {user ? (
         <div className="followstatus">
           {params.userId === user.userId ? "This is you!" : null}
-          You are currently following this user.
-          <a className="unfollow" onClick={() => handleFollowChange(false)}>
-            Unfollow user
-          </a>
-          . You are not yet following this user.
-          <a className="follow" onClick={() => handleFollowChange(true)}>
-            Follow user
-          </a>
-          .
+          {isFollowing ? (
+            <>
+              You are currently following this user.
+              <a className="unfollow" onClick={() => handleFollowChange(false)}>
+                Unfollow user
+              </a>
+              .
+            </>
+          ) : (
+            <>
+              You are not yet following this user.
+              <a className="follow" onClick={() => handleFollowChange(true)}>
+                Follow user
+              </a>
+              .
+            </>
+          )}
         </div>
       ) : null}
       {user !== null ? <TwitBox user={user} /> : null}

@@ -31,7 +31,7 @@ namespace MiniTwit_API.Controllers
 
         [Authorize]
         [HttpGet("Timeline")]
-        public ActionResult<List<Message>> GetMessageTimeline(int limit)
+        public ActionResult<List<PublicMessageDTO>> GetMessageTimeline(int limit)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
@@ -58,18 +58,37 @@ namespace MiniTwit_API.Controllers
 
                 }
             }
-            return messages.OrderByDescending(x => x.PubDate).Take(limit).ToList();
+            return messages.OrderByDescending(x => x.PubDate).Select(message => new PublicMessageDTO
+            {
+                Email = user.Email,
+                UserName = user.UserName,
+                MessageId = message.MessageId,
+                UserId = user.UserId,
+                Flagged = message.Flagged,
+                PubDate = message.PubDate,
+                Text = message.Text
+            }).Take(limit).ToList();
         }
 
         [Authorize]
-        [HttpGet ("UserMessages")]
+        [HttpGet("UserMessages")]
         public ActionResult<UserMessagesDTO> GetMessages(int userId)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             int id = int.Parse(identity.FindFirst("Id").Value);
-            List<Message> messages = context.Messages.Where(m => m.UserId == userId).ToList();
-            
+            User user = context.Users.Find(userId);
+            List<PublicMessageDTO> messages = context.Messages.Where(m => m.UserId == userId).Select(message => new PublicMessageDTO
+            {
+                UserName = user != null ? user.UserName : "",
+                MessageId = message.MessageId,
+                UserId = user != null ? user.UserId : 0,
+                Email = user != null ? user.Email : "",
+                Flagged = message.Flagged,
+                PubDate = message.PubDate,
+                Text = message.Text
+            }).ToList();
+
             bool following = context.Followers.Any(r => r.WhoId == id && r.WhomId == userId);
 
             return new UserMessagesDTO
