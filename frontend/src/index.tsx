@@ -3,10 +3,13 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import Router from "./Router";
+import { UserContextProvider } from "./utils/userContext";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router />
+    <UserContextProvider>
+      <Router />
+    </UserContextProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
