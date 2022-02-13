@@ -32,6 +32,7 @@ namespace MiniTwit_API.Controllers
                     Email = user.Email,
                     UserName = user.UserName,
                     MessageId = message.MessageId,
+                    UserId = user.UserId,
                     Flagged = message.Flagged,
                     PubDate = message.PubDate,
                     Text = message.Text

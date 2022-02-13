@@ -18,7 +18,7 @@ public class AccountControllerTests
 
         var hmac = new HMACSHA512(Encoding.ASCII.GetBytes("secretkey"));
 
-        var hashed =  Encoding.ASCII.GetString(hmac.ComputeHash(Encoding.ASCII.GetBytes("SikkerKode")));
+        var hashed = Encoding.ASCII.GetString(hmac.ComputeHash(Encoding.ASCII.GetBytes("SikkerKode")));
 
         var user = new User
         {
@@ -43,11 +43,11 @@ public class AccountControllerTests
         };
 
         var result = _controller.Post(newUser).Result;
-        var okResult = result as OkObjectResult;    
-        
+        var okResult = result as OkObjectResult;
+
         //courtesy of: https://stackoverflow.com/questions/41292919/unit-testing-controller-methods-which-return-iactionresult 
         Assert.NotNull(result);
-        Assert.Equal(200, okResult.StatusCode);        
+        Assert.Equal(200, okResult.StatusCode);
     }
 
     [Fact]
@@ -66,12 +66,12 @@ public class AccountControllerTests
     {
         var user = new LoginDTO
         {
-            Email = null,
+            UserName = null,
             Password = "SikkertKodeord125"
         };
 
         var result = _controller.Login(user).Result;
-        var badResult = result as BadRequestObjectResult; 
+        var badResult = result as BadRequestObjectResult;
         Assert.Equal(400, badResult.StatusCode);
         Assert.Equal("Email and password needs to be provided", badResult.Value);
     }
@@ -81,7 +81,7 @@ public class AccountControllerTests
     {
         var user = new LoginDTO
         {
-            Email = "test@test.dk",
+            UserName = "Testman",
             Password = "SikkerKode"
         };
 
@@ -95,7 +95,7 @@ public class AccountControllerTests
     {
         var user = new LoginDTO
         {
-            Email = "test@test.dk",
+            UserName = "Testman",
             Password = "UsikkerKode"
         };
 
