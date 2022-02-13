@@ -11,6 +11,7 @@ public class UserControllerTests
         var builder = new DbContextOptionsBuilder<MiniTwitContext>();
         builder.UseSqlite(connection);
         var context = new MiniTwitContext(builder.Options);
+        context.Database.EnsureCreated();
         _controller = new UserController(context);
     }
 
