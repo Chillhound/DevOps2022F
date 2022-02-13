@@ -23,7 +23,7 @@
   ```sh
   npm run
   ```
-4. Run the backend in a seperate terminal from DevOps2022F/backend
+4. Run the backend in a seperate terminal from DevOps2022F/backend/MiniTwit-API
   ```sh
   dotnet run
   ```
