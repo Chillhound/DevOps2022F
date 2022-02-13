@@ -1,9 +1,14 @@
 ﻿using DataAccess;
+using Domain.DTO;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace MiniTwit_API.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class UserController : Controller
     {
 
@@ -14,38 +19,91 @@ namespace MiniTwit_API.Controllers
             this.context = context;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<User>> GetUserById(int id)
-        {
-           return await context.Users.FindAsync(id);
-        }
+        //[HttpGet]
+        //public async Task<ActionResult<User>> GetUserById(int id)
+        //{
+        //   return await context.Users.FindAsync(id);
+        //}
 
-        [HttpGet]
-        public ActionResult<List<Message>> GetMessageTimeline(int id, int limit)
+        [Authorize]
+        [HttpGet("Timeline")]
+        public ActionResult<List<Message>> GetMessageTimeline(int limit)
         {
-            User user = context.Users.Find(id);
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            int userId = int.Parse(identity.FindFirst("Id").Value);
+
+            User user = context.Users.Find(userId);
+            if (user == null) return BadRequest();
 
             List<Message> messages = new List<Message>();
 
-            messages.AddRange(user.Messages.Where(x => x.Flagged == 0).ToList());
+            
+            if (user.Messages != null)
+            messages.AddRange(context.Messages.Where(m => m.Flagged == 0 && m.UserId == userId).ToList());
 
-            foreach (var x in user.Followers)
+            if (user.Following != null)
             {
-                var mes = x.Messages.Where(m => m.Flagged == 0).ToList();
+                var FollowingUserList = context.Followers.Where(x => x.WhoId == userId).Select(x => x.Whom);
 
-                messages.AddRange(mes);
+                foreach (User FollowingUser in FollowingUserList)
+                {
+
+                    if (FollowingUser.Messages != null)
+                        messages.AddRange(context.Messages.Where(m => m.Flagged == 0 && m.UserId == FollowingUser.UserId).ToList());
+
+                }
             }
-
             return messages.OrderByDescending(x => x.PubDate).Take(limit).ToList();
         }
 
-        [HttpGet]
-        public ActionResult<List<Message>> GetMessages(int id)
+        [Authorize]
+        [HttpGet ("UserMessages")]
+        public ActionResult<List<Message>> GetMessages()
         {
-           
-            return context.Users.Find(id).Messages.ToList();
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            int userId = int.Parse(identity.FindFirst("Id").Value);
+            return context.Messages.Where(m => m.UserId == userId).ToList();
         }
 
+        [Authorize]
+        [HttpGet("Follow")]
+        public ActionResult<List<Message>> Follow(string username)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            int userId = int.Parse(identity.FindFirst("Id").Value);
+            var FollowUser = context.Users.Where(e => e.UserName == username).FirstOrDefault();
+
+            var newRelation = new Follower
+            {
+                WhoId = userId,
+                WhomId = FollowUser.UserId,
+                Who = context.Users.Find(userId),
+                Whom = FollowUser
+            };
+            var user = context.Users.Find(userId);
+            if (user.Following == null) { user.Following = new List<Follower>(); }
+            user.Following.Add(newRelation);
+            context.SaveChanges();
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("Unfollow")]
+        public ActionResult Unfollow(string username)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            int userId = int.Parse(identity.FindFirst("Id").Value);
+            var FollowingUser = context.Users.Where(e => e.UserName == username).Select(x => x.UserId).FirstOrDefault();
+           
+            var relation = context.Followers.Where(e => e.WhomId == FollowingUser && e.WhoId == userId).FirstOrDefault();
+            context.Followers.Remove(relation);
+            context.SaveChanges();
+            return Ok();
+        }
 
     }
 }
