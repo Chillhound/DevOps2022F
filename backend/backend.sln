@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{DA04CD40-DA14-4B4A-9FBB-884E013E7919}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MiniTwit-API", "MiniTwit-API", "{CBF8BDBC-C726-4CE5-B6CF-33E54834B956}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerTests", "MiniTwit-API\ControllerTests\ControllerTests.csproj", "{4B414346-9D00-4E3B-A89E-F0A11A286D33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,11 +31,18 @@ Global
 		{DA04CD40-DA14-4B4A-9FBB-884E013E7919}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA04CD40-DA14-4B4A-9FBB-884E013E7919}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA04CD40-DA14-4B4A-9FBB-884E013E7919}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B414346-9D00-4E3B-A89E-F0A11A286D33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B414346-9D00-4E3B-A89E-F0A11A286D33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B414346-9D00-4E3B-A89E-F0A11A286D33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B414346-9D00-4E3B-A89E-F0A11A286D33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8227CE65-0CD7-438B-98C1-7DAC1E019B23}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4B414346-9D00-4E3B-A89E-F0A11A286D33} = {CBF8BDBC-C726-4CE5-B6CF-33E54834B956}
 	EndGlobalSection
 EndGlobal
