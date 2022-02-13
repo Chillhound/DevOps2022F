@@ -62,13 +62,21 @@ namespace MiniTwit_API.Controllers
         }
 
         [Authorize]
-        [HttpGet("UserMessages")]
-        public ActionResult<List<Message>> GetMessages()
+        [HttpGet ("UserMessages")]
+        public ActionResult<UserMessagesDTO> GetMessages(int userId)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
-            int userId = int.Parse(identity.FindFirst("Id").Value);
-            return context.Messages.Where(m => m.UserId == userId).ToList();
+            int id = int.Parse(identity.FindFirst("Id").Value);
+            List<Message> messages = context.Messages.Where(m => m.UserId == userId).ToList();
+            
+            bool following = context.Followers.Any(r => r.WhoId == id && r.WhomId == userId);
+
+            return new UserMessagesDTO
+            {
+                IsFollowing = following,
+                messages = messages
+            };
         }
 
         [Authorize]
