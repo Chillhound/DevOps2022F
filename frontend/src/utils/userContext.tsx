@@ -2,7 +2,7 @@ import React from "react";
 
 export interface User {
   userName: string;
-  userId: string;
+  userId: number;
   token: string;
 }
 

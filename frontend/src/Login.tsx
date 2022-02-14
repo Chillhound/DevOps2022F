@@ -16,9 +16,11 @@ const Login: React.FC = () => {
   const tokenRef = React.useRef("");
   const navigate = useNavigate();
   const { addFlash } = React.useContext(flashContext);
+  const [error, setError] = React.useState("");
 
   const onSubmit: SubmitHandler<FormValues> = React.useCallback(
     ({ userName, password }) => {
+      setError("");
       fetch(`${baseUrl}/Account/Login`, {
         headers: {
           "Content-Type": "application/json",
@@ -26,7 +28,12 @@ const Login: React.FC = () => {
         method: "POST",
         body: JSON.stringify({ userName, password }),
       })
-        .then((res) => res.text())
+        .then((res) => {
+          if (res.status !== 200) {
+            throw new Error("Wrong password");
+          }
+          return res.text();
+        })
         .then((token) => {
           tokenRef.current = token;
           fetch(`${baseUrl}/User/Me`, {
@@ -45,7 +52,8 @@ const Login: React.FC = () => {
               addFlash("You were logged in!");
               navigate("/");
             });
-        });
+        })
+        .catch(() => setError("Bad username/password combination"));
     },
     [addFlash, navigate, setUser]
   );
@@ -53,9 +61,11 @@ const Login: React.FC = () => {
   return (
     <>
       <h2>Sign In</h2>
-      <div className="error">
-        <strong>Error:</strong>smut
-      </div>
+      {error ? (
+        <div className="error">
+          <strong>Error:</strong> {error}
+        </div>
+      ) : null}
       <form action="" onSubmit={handleSubmit(onSubmit)}>
         <dl>
           <dt>Username:</dt>
@@ -79,8 +89,6 @@ const Login: React.FC = () => {
         <div className="actions">
           <input type="submit" value="Sign In" />
         </div>
-        <button onClick={() => addFlash("Test1")}>Test1</button>
-        <button onClick={() => addFlash("Test2")}>Test1</button>
       </form>
     </>
   );

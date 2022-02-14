@@ -92,7 +92,7 @@ const Register: React.FC = () => {
                 validate: (value) =>
                   // TODO: Make sure password are equal
                   getValues("password") !== value
-                    ? "You have to enter a password"
+                    ? "The two passwords do not match"
                     : undefined,
                 maxLength: 30,
               })}
