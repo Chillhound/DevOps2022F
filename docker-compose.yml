@@ -4,10 +4,11 @@ version: '3.9'
 services:
   db: 
     container_name: "db"
-    image: mcr.microsoft.com/mssql/server
+    image: mcr.microsoft.com/azure-sql-edge:latest
     environment: 
-      SA_PASSWORD: "Belnis12456!"
+      MSSQL_SA_PASSWORD: "Belnis12456!"
       ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
     # container_name: "db"
     # image: keinos/sqlite3
     # ports:
