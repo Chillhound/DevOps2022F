@@ -37,7 +37,7 @@ namespace MiniTwit_API.Controllers
                 Email = userDTO.Email,
                 UserName = userDTO.UserName,
                 PasswordHash = hashed
-                
+
             };
 
 
@@ -50,9 +50,9 @@ namespace MiniTwit_API.Controllers
         [HttpPost("Login")]
         public ActionResult<string> Login([FromBody] LoginDTO login)
         {
-            if (login.Email == null || login.Password == null) return BadRequest("Email and password needs to be provided");
+            if (login.UserName == null || login.Password == null) return BadRequest("Email and password needs to be provided");
 
-            User user = context.Users.Where(x => x.Email == login.Email && x.PasswordHash == GetHash(login.Password)).FirstOrDefault();
+            User user = context.Users.Where(x => x.UserName == login.UserName && x.PasswordHash == GetHash(login.Password)).FirstOrDefault();
 
             if (user == null) return BadRequest("User not Found");
 
@@ -65,7 +65,7 @@ namespace MiniTwit_API.Controllers
             var hmac = new HMACSHA512(Encoding.ASCII.GetBytes("secretkey"));
 
             return Encoding.ASCII.GetString(hmac.ComputeHash(Encoding.ASCII.GetBytes(password)));
-           
+
         }
     }
 }

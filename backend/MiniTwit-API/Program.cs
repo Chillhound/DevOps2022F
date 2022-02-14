@@ -29,6 +29,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     };
                 });
 
+builder.Services.AddCors(options =>
+    options.AddPolicy("localhost", builder =>
+    {
+        builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    })
+);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,6 +45,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("localhost");
 }
 
 using (var scope = app.Services.CreateScope())
@@ -44,7 +54,7 @@ using (var scope = app.Services.CreateScope())
 
     var context = services.GetRequiredService<MiniTwitContext>();
     context.Database.EnsureCreated();
-   
+
 }
 
 app.UseHttpsRedirection();

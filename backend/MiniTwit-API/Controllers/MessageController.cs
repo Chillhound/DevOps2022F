@@ -16,7 +16,7 @@ namespace MiniTwit_API.Controllers
         {
             this.context = context;
         }
-        [HttpGet ("PublicTimeline")]
+        [HttpGet("PublicTimeline")]
         public ActionResult<List<PublicMessageDTO>> PublicTimeline(int limit)
         {
 
@@ -32,12 +32,13 @@ namespace MiniTwit_API.Controllers
                     Email = user.Email,
                     UserName = user.UserName,
                     MessageId = message.MessageId,
+                    UserId = user.UserId,
                     Flagged = message.Flagged,
                     PubDate = message.PubDate,
                     Text = message.Text
                 });
             }
-            
+
             return result;
         }
 
@@ -48,16 +49,17 @@ namespace MiniTwit_API.Controllers
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             int userId = int.Parse(identity.FindFirst("Id").Value);
+            var user = context.Users.Find(userId);
             Message message = new Message
             {
                 PubDate = DateTime.Now,
                 Flagged = 0,
                 UserId = userId,
-                Text = messageText
+                Text = messageText,
+                User = user,
             };
 
-            var user = context.Users.Find(userId);
-            if(user.Messages == null) { user.Messages = new List<Message>(); }
+            if (user.Messages == null) { user.Messages = new List<Message>(); }
             user.Messages.Add(message);
             context.SaveChanges();
 

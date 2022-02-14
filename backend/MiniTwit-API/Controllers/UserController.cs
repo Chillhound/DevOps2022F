@@ -19,15 +19,19 @@ namespace MiniTwit_API.Controllers
             this.context = context;
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult<User>> GetUserById(int id)
-        //{
-        //   return await context.Users.FindAsync(id);
-        //}
+        [Authorize]
+        [HttpGet("Me")]
+        public async Task<ActionResult<User>> GetAuthenticatedUser()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            int userId = int.Parse(identity.FindFirst("Id").Value);
+
+            return await context.Users.FindAsync(userId);
+        }
 
         [Authorize]
         [HttpGet("Timeline")]
-        public ActionResult<List<Message>> GetMessageTimeline(int limit)
+        public ActionResult<List<PublicMessageDTO>> GetMessageTimeline(int limit)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
@@ -38,9 +42,9 @@ namespace MiniTwit_API.Controllers
 
             List<Message> messages = new List<Message>();
 
-            
+
             if (user.Messages != null)
-            messages.AddRange(context.Messages.Where(m => m.Flagged == 0 && m.UserId == userId).ToList());
+                messages.AddRange(context.Messages.Where(m => m.Flagged == 0 && m.UserId == userId).ToList());
 
             if (user.Following != null)
             {
@@ -54,18 +58,37 @@ namespace MiniTwit_API.Controllers
 
                 }
             }
-            return messages.OrderByDescending(x => x.PubDate).Take(limit).ToList();
+            return messages.OrderByDescending(x => x.PubDate).Select(message => new PublicMessageDTO
+            {
+                Email = message.User.Email,
+                UserName = message.User.UserName,
+                MessageId = message.MessageId,
+                UserId = message.User.UserId,
+                Flagged = message.Flagged,
+                PubDate = message.PubDate,
+                Text = message.Text
+            }).Take(limit).ToList();
         }
 
         [Authorize]
-        [HttpGet ("UserMessages")]
+        [HttpGet("UserMessages")]
         public ActionResult<UserMessagesDTO> GetMessages(int userId)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             int id = int.Parse(identity.FindFirst("Id").Value);
-            List<Message> messages = context.Messages.Where(m => m.UserId == userId).ToList();
-            
+            User user = context.Users.Find(userId);
+            List<PublicMessageDTO> messages = context.Messages.Where(m => m.UserId == userId).Select(message => new PublicMessageDTO
+            {
+                UserName = user != null ? user.UserName : "",
+                MessageId = message.MessageId,
+                UserId = user != null ? user.UserId : 0,
+                Email = user != null ? user.Email : "",
+                Flagged = message.Flagged,
+                PubDate = message.PubDate,
+                Text = message.Text
+            }).ToList();
+
             bool following = context.Followers.Any(r => r.WhoId == id && r.WhomId == userId);
 
             return new UserMessagesDTO
@@ -106,7 +129,7 @@ namespace MiniTwit_API.Controllers
 
             int userId = int.Parse(identity.FindFirst("Id").Value);
             var FollowingUser = context.Users.Where(e => e.UserName == username).Select(x => x.UserId).FirstOrDefault();
-           
+
             var relation = context.Followers.Where(e => e.WhomId == FollowingUser && e.WhoId == userId).FirstOrDefault();
             context.Followers.Remove(relation);
             context.SaveChanges();
