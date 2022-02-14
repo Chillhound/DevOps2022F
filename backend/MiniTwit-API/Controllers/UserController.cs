@@ -60,10 +60,10 @@ namespace MiniTwit_API.Controllers
             }
             return messages.OrderByDescending(x => x.PubDate).Select(message => new PublicMessageDTO
             {
-                Email = user.Email,
-                UserName = user.UserName,
+                Email = message.User.Email,
+                UserName = message.User.UserName,
                 MessageId = message.MessageId,
-                UserId = user.UserId,
+                UserId = message.User.UserId,
                 Flagged = message.Flagged,
                 PubDate = message.PubDate,
                 Text = message.Text

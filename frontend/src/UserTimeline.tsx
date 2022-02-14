@@ -1,82 +1,74 @@
 import React from "react";
 import { useParams } from "react-router";
+import useSWR from "swr";
 import TimelineMessages from "./TimelineMessages";
 import TwitBox from "./Twitbox";
 import { baseUrl } from "./utils/config";
+import { fetcher } from "./utils/fetcher";
 import userContext from "./utils/userContext";
 
 const UserTimeline: React.FC = () => {
   const { user } = React.useContext(userContext);
-  const [timelineMessages, setTimelineMessages] = React.useState<any[]>([]);
-  const [isFollowing, setIsFollowing] = React.useState(false);
   const params = useParams();
-
-  React.useEffect(() => {
-    if (!user) {
-      return;
-    }
-    fetch(`${baseUrl}/User/UserMessages?userId=${params.userId || 0}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: user.token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setTimelineMessages(data.messages);
-        setIsFollowing(data.isFollowing);
-      });
-  }, [params.userId, user]);
+  const { data, mutate } = useSWR(
+    user
+      ? [
+          `${baseUrl}/User/UserMessages?userId=${params.userId || 0}`,
+          user.token,
+        ]
+      : null,
+    fetcher
+  );
 
   const handleFollowChange = React.useCallback(
     (shouldFollow: boolean) => {
-      if (!user || timelineMessages.length === 0) {
+      if (!user || !data || data?.messages.length === 0) {
         return;
       }
 
       fetch(
         `${baseUrl}/User/${shouldFollow ? "Follow" : "Unfollow"}?username=${
-          timelineMessages[0].userName
+          data.messages[0].userName
         }`,
         {
           headers: {
             Authorization: user.token,
           },
         }
-      );
+      ).then(() => mutate());
     },
-    [timelineMessages, user]
+    [data, mutate, user]
   );
 
   return (
     <>
       <h2>User Timeline</h2>
-      {user ? (
+      {user && data ? (
         <div className="followstatus">
           {Number(params.userId) === user.userId ? (
             "This is you!"
           ) : (
             <>
-              {isFollowing ? (
+              {data.isFollowing ? (
                 <>
                   You are currently following this user.
-                  <a
+                  <button
                     className="unfollow"
                     onClick={() => handleFollowChange(false)}
                   >
                     Unfollow user
-                  </a>
+                  </button>
                   .
                 </>
               ) : (
                 <>
                   You are not yet following this user.
-                  <a
+                  <button
                     className="follow"
                     onClick={() => handleFollowChange(true)}
                   >
                     Follow user
-                  </a>
+                  </button>
                   .
                 </>
               )}
@@ -84,8 +76,10 @@ const UserTimeline: React.FC = () => {
           )}
         </div>
       ) : null}
-      {user !== null ? <TwitBox user={user} /> : null}
-      <TimelineMessages messages={timelineMessages} />
+      {user !== null && Number(params.userId) === user.userId ? (
+        <TwitBox user={user} />
+      ) : null}
+      <TimelineMessages messages={data?.messages || []} />
     </>
   );
 };

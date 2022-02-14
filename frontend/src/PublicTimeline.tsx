@@ -1,20 +1,24 @@
 import React from "react";
+import useSWR from "swr";
 import TimelineMessages from "./TimelineMessages";
+import TwitBox from "./Twitbox";
 import { baseUrl } from "./utils/config";
+import { fetcher } from "./utils/fetcher";
+import userContext from "./utils/userContext";
 
 const PublicTimeline: React.FC = () => {
-  const [timelineItems, setTimelineItems] = React.useState<any[]>([]);
+  const { user } = React.useContext(userContext);
 
-  React.useEffect(() => {
-    fetch(`${baseUrl}/Message/PublicTimeline?limit=100`)
-      .then((res) => res.json())
-      .then((data) => setTimelineItems(data));
-  }, []);
+  const { data, mutate } = useSWR(
+    [`${baseUrl}/Message/PublicTimeline?limit=100`, ""],
+    fetcher
+  );
 
   return (
     <>
       <h2>Public Timeline</h2>
-      <TimelineMessages messages={timelineItems} />
+      {user !== null ? <TwitBox user={user} onUpdate={mutate} /> : null}
+      <TimelineMessages messages={data || []} />
     </>
   );
 };

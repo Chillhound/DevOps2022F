@@ -1,11 +1,12 @@
 import React, { FormEventHandler } from "react";
-import { useNavigate } from "react-router";
 import { baseUrl } from "./utils/config";
 import { User } from "./utils/userContext";
 
-const TwitBox: React.FC<{ user: User }> = ({ user }) => {
+const TwitBox: React.FC<{ user: User; onUpdate?: () => void }> = ({
+  user,
+  onUpdate,
+}) => {
   const [text, setText] = React.useState("");
-  const navigate = useNavigate();
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = React.useCallback(
     (e) => {
@@ -22,9 +23,14 @@ const TwitBox: React.FC<{ user: User }> = ({ user }) => {
         headers: {
           Authorization: user.token,
         },
-      }).then(() => navigate("/"));
+      }).then(() => {
+        if (onUpdate) {
+          onUpdate();
+        }
+        setText("");
+      });
     },
-    [navigate, text, user.token]
+    [onUpdate, text, user.token]
   );
 
   return (

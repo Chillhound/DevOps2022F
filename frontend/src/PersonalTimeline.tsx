@@ -1,28 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router";
+import useSWR from "swr";
 import TimelineMessages from "./TimelineMessages";
 import TwitBox from "./Twitbox";
 import { baseUrl } from "./utils/config";
+import { fetcher } from "./utils/fetcher";
 import userContext from "./utils/userContext";
 
 const PersonalTimeline: React.FC = () => {
   const { user } = React.useContext(userContext);
-  const [timelineMessages, setTimelineMessages] = React.useState<any[]>([]);
   const navigate = useNavigate();
-
-  React.useEffect(() => {
-    if (!user) {
-      return;
-    }
-    fetch(`${baseUrl}/User/Timeline?limit=100`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: user.token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setTimelineMessages(data));
-  }, [user]);
+  const { data, mutate } = useSWR(
+    user ? [`${baseUrl}/User/Timeline?limit=100`, user.token] : null,
+    fetcher
+  );
 
   React.useEffect(() => {
     if (!user) {
@@ -33,8 +24,8 @@ const PersonalTimeline: React.FC = () => {
   return (
     <>
       <h2>Your timeline</h2>
-      {user ? <TwitBox user={user} /> : null}
-      <TimelineMessages messages={timelineMessages} />
+      {user ? <TwitBox user={user} onUpdate={mutate} /> : null}
+      <TimelineMessages messages={data || []} />
     </>
   );
 };
