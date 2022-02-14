@@ -1,0 +1,30 @@
+# FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+
+# COPY . /src
+
+# WORKDIR /src/backend/MiniTwit-API
+
+# #CMD ls
+
+# #CMD cd MiniTwit-API 
+
+# CMD ls
+
+# RUN dotnet restore 
+
+# RUN dotnet run 
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+
+COPY . /src
+WORKDIR /src/backend/MiniTwit-API
+
+RUN dotnet restore
+
+RUN dotnet publish --configuration Release --output /app
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /app
+COPY --from=build /app ./
+
+ENTRYPOINT ["dotnet", "MiniTwit-API.dll"]
