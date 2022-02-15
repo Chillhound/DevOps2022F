@@ -16,9 +16,9 @@ Registers a new user
 
 ```bash
 if error:
-		return jsonify({"status": 400, "error_msg": error}), 400
+	return jsonify({"status": 400, "error_msg": error}), 400
 else:
-		return "", 204
+	return "", 204
 ```
 
 ## /msgs
@@ -51,7 +51,7 @@ POST: starts following or unfollowing the user
 
 ```bash
 if error:
-		return "", 204	
+	return "", 204	
 else:
-		return jsonify(followers_response)
+	return jsonify(followers_response)
 ```
