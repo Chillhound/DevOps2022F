@@ -33,7 +33,7 @@ namespace MiniTwit_Public_API.Controllers
             var messages = _context.Messages.Where(m => m.Flagged == 0).Select(m => m).ToList();
             return messages;
         }
-        
+
         [HttpGet]
         [Route("/latest")]
         public LatestResult GetLatest()
@@ -55,9 +55,25 @@ namespace MiniTwit_Public_API.Controllers
         public IActionResult PostMessages(string username)
         {
             //Har taget udgangspunkt i at Helge IKKE validerer brugeren
-            var request = HttpContext.Request; 
-            string content = request.Form["content"]; //er ikke sikker på at jeg tror på denne 100%
 
+            //tror vi skal hente beskeden ud via noget af følgende: 
+            //var maybeThis = HttpContext.Items["content"];
+            //var orThis = Request.Body;
+            //var orStream = new StreamReader(Request.Body);
+            //var maybeBody = orStream.ReadToEnd();
+            
+            //nogle gode ideer?
+            //det kan også være at det blot skal testes med postman eller lignende for rent faktisk at sende noget content
+
+            //de her er måske også gode bud?
+            // var halloooo = Request.Query["content"].ToString();
+            // var halløj = HttpContext.Request.Query["content"].ToString();
+            //HAR TESTET MED THUNDERCLIENT OG DET VIRKER !!! 
+
+            //Console.WriteLine(halloooo);
+            //Console.WriteLine(halløj);
+
+            var content = Request.Query["content"].ToString();
             Console.WriteLine(content);
 
             var user = _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
