@@ -45,6 +45,9 @@ namespace MiniTwit_Public_API.Controllers
         public ActionResult<ICollection<Message>> GetMessagesUser(string username)
         {
             //Er det muligt at denne skal returnere 404 i tilfælde af ikke-eksisterende bruger?
+
+            //han trækker antallet af besker ud af "args" - hvordan får vi det? er det ligesom /endpoint?limit=12?
+
             var user = _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
             var messages = _context.Messages.Where(m => m.UserId == user.UserId).Where(m => m.Flagged == 0).Select(m => m).ToList();
             return messages; 
@@ -102,14 +105,40 @@ namespace MiniTwit_Public_API.Controllers
         [Route("fllws/{username}")]
         public IActionResult FollowUser(string username, int no = 100)
         {
+            var user = _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
+            if (user == null) return NotFound("yeeeeet");
+
+            //hvordan fuck får man "args" ud af requesten? altså ligesom hans "no_followers"
+
             return null;
+
         }
 
         [HttpPost]
         [Route("fllws/{username}")]
         public IActionResult ToggleFollowUser(string username)
         {
-            return null;
+
+            //vi bør kunne gøre det på denne måde
+            var data = Request.Query;
+            if (data.ContainsKey("unfollow")) 
+            {
+                //smider exceptions pt. fordi db er tom
+                //var userToBeUnfollowed = _context.Users.Where(u => u.UserName == data["unfollow"]);
+                Console.WriteLine("Jeg skal unfollow "+data["unfollow"]);
+
+                //resten af logikken
+            }
+            else if (data.ContainsKey("follow"))
+            {
+                //smider exceptions pt. fordi db er tom
+                //var userToBeUnfollowed = _context.Users.Where(u => u.UserName == data["unfollow"]);
+                Console.WriteLine("Jeg skal follow "+data["follow"]);
+
+                //resten af logikken
+            }
+
+            return NoContent();
         }
 
         public class LatestResult
