@@ -25,21 +25,22 @@ namespace MiniTwit_Public_API.Controllers
 
         int latest = 0;
 
-        [HttpGet ("msgs")]
+        [HttpGet]
+        [Route("/msgs")]
         public ActionResult<ICollection<Message>> GetMessages()
         {
             //TODO: skal latest opdateres? I så fald: hvordan?
             var messages = _context.Messages.Where(m => m.Flagged == 0).Select(m => m).ToList();
             return messages;
         }
-
-        [HttpGet("latest")]
+        
+        [HttpGet]
+        [Route("/latest")]
         public LatestResult GetLatest()
         {
             return new LatestResult { latest = latest };
         }
-
-        [HttpGet("msgs/{username}")]
+        [HttpGet]
         [Route("msgs/{username}")]
         public ActionResult<ICollection<Message>> GetMessagesUser(string username)
         {
@@ -49,7 +50,7 @@ namespace MiniTwit_Public_API.Controllers
             return messages; 
         }
 
-        [HttpPost("msgs/{username}")]
+        [HttpPost]
         [Route("msgs/{username}")]
         public IActionResult PostMessages(string username)
         {
@@ -59,38 +60,36 @@ namespace MiniTwit_Public_API.Controllers
 
             Console.WriteLine(content);
 
-            // var user = _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
-            // if (user == null) return NotFound("yeeeeet"); //Helge kigger ikke på om brugeren findes, lol - måske skal vi heller ikke
-
-            // var message = new Message
-            // {
-            //     User = user,
-            //     UserId = user.UserId,
-            //     Text = content,
-            //     PubDate = DateTime.UtcNow,
-            //     Flagged = 0
-            // }; 
-
-            // _context.Messages.Add(message);
+            var user = _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
+            if (user == null) return NotFound("yeeeeet"); //Helge kigger ikke på om brugeren findes, lol - måske skal vi heller ikke
+            var message = new Message
+            {
+                User = user,
+                UserId = user.UserId,
+                Text = content,
+                PubDate = DateTime.UtcNow,
+                Flagged = 0
+            }; 
+            _context.Messages.Add(message);
 
             return NoContent();
         }
 
-        [HttpPost("{username}")]
-        [Route("register")]
+        [HttpPost]
+        [Route("/register")]
         public IActionResult CreateUser(CreateUserDTO userDTO)
         {
             return null;
         }
 
-        [HttpGet("fllws/{username}")]
+        [HttpGet]
         [Route("fllws/{username}")]
         public IActionResult FollowUser(string username, int no = 100)
         {
             return null;
         }
 
-        [HttpPost("fllws/{username}")]
+        [HttpPost]
         [Route("fllws/{username}")]
         public IActionResult ToggleFollowUser(string username)
         {
