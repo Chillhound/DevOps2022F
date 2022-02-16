@@ -14,8 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var connection = @"Server=db;Database=master;User=sa;Password=Belnis12456!;";
-//builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite")));
-builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlServer(connection));
+builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite")));
+//builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlServer(connection));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
