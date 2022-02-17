@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Models;
+using System.Security.Cryptography;
 
 namespace MiniTwit_Public_API.Controllers
 {
@@ -23,8 +24,6 @@ namespace MiniTwit_Public_API.Controllers
             _context = context;
         }
 
-        int latest = 0;
-
         [HttpGet]
         [Route("/msgs")]
         public ActionResult<ICollection<Message>> GetMessages()
@@ -38,13 +37,10 @@ namespace MiniTwit_Public_API.Controllers
         [Route("/latest")]
         public ActionResult GetLatest()
         {
-            Console.WriteLine("latest endpoint er ramt");
-            var val = Request.Query["latest"];
-            latest = int.Parse(val);
-
-            //fejler fordi den ikke tolker Ok(latest) som et ok response i første assertion 
-
-            return Ok(latest);
+            Console.WriteLine("latest endpoint er ramt med value:" + LatestResult.Latest);
+            
+            //return new OkObjectResult(LatestResult.Latest);
+            return Ok(LatestResult.Latest);
         }
 
         [HttpGet]
@@ -86,12 +82,31 @@ namespace MiniTwit_Public_API.Controllers
 
         [HttpPost]
         [Route("/register")]
-        public IActionResult CreateUser()
-        {
+        public IActionResult CreateUser([FromBody] CreateUserDTO userDTO)
+        { 
+            var lat = Request.Query["latest"];
+            LatestResult.Latest = int.Parse(lat);
+
+            if (userDTO == null) return BadRequest();
+            string hashed = GetHash(userDTO.pwd);
+
+            User user = new User
+            {
+                Email = userDTO.email,
+                UserName = userDTO.username,
+                PasswordHash = hashed
+
+            };
+
+
+            _context.Add(user);
+            _context.SaveChanges();
+
+            
+
             //vi skal trække brugerinfo ud af request, ikke argument til funktionen 
 
-            var lat = Request.Query["latest"];
-            Console.WriteLine("LATEST: "+lat);
+            Console.WriteLine("LATEST: "+ LatestResult.Latest);
 
             return Ok();
         }
@@ -137,9 +152,17 @@ namespace MiniTwit_Public_API.Controllers
             return NoContent();
         }
 
-        public class LatestResult
+        public static class LatestResult
         {
-           public int latest { get; set; }
+            public static int Latest;
+        }
+
+        private static string GetHash(string password)
+        {
+            var hmac = new HMACSHA512(Encoding.ASCII.GetBytes("secretkey"));
+
+            return Encoding.ASCII.GetString(hmac.ComputeHash(Encoding.ASCII.GetBytes(password)));
+
         }
     }
 }
