@@ -35,7 +35,7 @@ namespace MiniTwit_API.Controllers
             User user = new User
             {
                 Email = userDTO.Email,
-                UserName = userDTO.UserName,
+                UserName = userDTO.Username,
                 PasswordHash = hashed
                 
             };
