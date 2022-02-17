@@ -36,10 +36,17 @@ namespace MiniTwit_Public_API.Controllers
 
         [HttpGet]
         [Route("/latest")]
-        public LatestResult GetLatest()
+        public ActionResult GetLatest()
         {
-            return new LatestResult { latest = latest };
+            Console.WriteLine("latest endpoint er ramt");
+            var val = Request.Query["latest"];
+            latest = int.Parse(val);
+
+            //fejler fordi den ikke tolker Ok(latest) som et ok response i første assertion 
+
+            return Ok(latest);
         }
+
         [HttpGet]
         [Route("msgs/{username}")]
         public ActionResult<ICollection<Message>> GetMessagesUser(string username)
@@ -58,23 +65,6 @@ namespace MiniTwit_Public_API.Controllers
         public IActionResult PostMessages(string username)
         {
             //Har taget udgangspunkt i at Helge IKKE validerer brugeren
-
-            //tror vi skal hente beskeden ud via noget af følgende: 
-            //var maybeThis = HttpContext.Items["content"];
-            //var orThis = Request.Body;
-            //var orStream = new StreamReader(Request.Body);
-            //var maybeBody = orStream.ReadToEnd();
-            
-            //nogle gode ideer?
-            //det kan også være at det blot skal testes med postman eller lignende for rent faktisk at sende noget content
-
-            //de her er måske også gode bud?
-            // var halloooo = Request.Query["content"].ToString();
-            // var halløj = HttpContext.Request.Query["content"].ToString();
-            //HAR TESTET MED THUNDERCLIENT OG DET VIRKER !!! 
-
-            //Console.WriteLine(halloooo);
-            //Console.WriteLine(halløj);
 
             var content = Request.Query["content"].ToString();
             Console.WriteLine(content);
@@ -96,9 +86,14 @@ namespace MiniTwit_Public_API.Controllers
 
         [HttpPost]
         [Route("/register")]
-        public IActionResult CreateUser(CreateUserDTO userDTO)
+        public IActionResult CreateUser()
         {
-            return null;
+            //vi skal trække brugerinfo ud af request, ikke argument til funktionen 
+
+            var lat = Request.Query["latest"];
+            Console.WriteLine("LATEST: "+lat);
+
+            return Ok();
         }
 
         [HttpGet]
@@ -109,6 +104,7 @@ namespace MiniTwit_Public_API.Controllers
             if (user == null) return NotFound("yeeeeet");
 
             //hvordan fuck får man "args" ud af requesten? altså ligesom hans "no_followers"
+            //args er vist bare det der bliver klasket bagpå? ellers så prøv med Request.Query
 
             return null;
 
