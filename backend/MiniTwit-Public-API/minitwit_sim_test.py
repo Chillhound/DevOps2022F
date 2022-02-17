@@ -38,13 +38,13 @@ def test_latest():
     params = {'latest': 1337}
     response = requests.post(url, data=json.dumps(data),
                              params=params, headers=HEADERS, verify=False)
-    #assert response.ok
+    assert response.ok
 
     # verify that latest was updated
     url = f'{BASE_URL}/latest'
     response = requests.get(url, headers=HEADERS, verify =False)
     assert response.ok
-    #assert response.json()['latest'] == 1337
+    assert response.json()['latest'] == 1337
 
 
 def test_register():
