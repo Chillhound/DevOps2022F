@@ -30,12 +30,12 @@ namespace MiniTwit_API.Controllers
         public ActionResult<string> Post([FromBody] CreateUserDTO userDTO)
         {
             if (userDTO == null) return BadRequest();
-            string hashed = GetHash(userDTO.Password);
+            string hashed = GetHash(userDTO.pwd);
 
             User user = new User
             {
-                Email = userDTO.Email,
-                UserName = userDTO.Username,
+                Email = userDTO.email,
+                UserName = userDTO.username,
                 PasswordHash = hashed
                 
             };

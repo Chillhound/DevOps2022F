@@ -37,9 +37,9 @@ public class AccountControllerTests
     {
         var newUser = new CreateUserDTO
         {
-            Username = "mikkis_far",
-            Email = "test@test.dk",
-            Password = "benis"
+            username = "mikkis_far",
+            email = "test@test.dk",
+            pwd = "benis"
         };
 
         var result = _controller.Post(newUser).Result;
