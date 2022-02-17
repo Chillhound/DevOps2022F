@@ -37,7 +37,7 @@ public class AccountControllerTests
     {
         var newUser = new CreateUserDTO
         {
-            UserName = "mikkis_far",
+            Username = "mikkis_far",
             Email = "test@test.dk",
             Password = "benis"
         };
