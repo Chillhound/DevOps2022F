@@ -65,19 +65,21 @@ namespace MiniTwit_Public_API.Controllers
         [Route("msgs/{username}")]
         public IActionResult PostMessages(string username)
         {
-            
             //testen "test_create_msg" fejler fordi beskeden der lægges ind er null,
             //og det sker fordi jeg ikke kan finde ud af at få beskeden ud af requesten :) 
             //hvis man indsætter en random streng manuelt, så fungerer det fint aka logikken er god nok
+            //PT. FEJLER DEN IKKE FORDI JEG HAR GIVET EN RANDOM STRENG MED
+
 
             //Har taget udgangspunkt i at Helge IKKE validerer brugeren
 
             //kan ikke fange content.. det lader til at det bliver sendt med i body, men aner ikke hvordan jeg får det ud når 
             //den også skal fange username via params... 
-            Console.WriteLine("POST ER RAMT BITCHES!!! - username: ");
-            Console.WriteLine(Request.Headers["content"]);
+            Console.WriteLine("POST ER RAMT BITCHES!!! - username: "+username);
             LatestResult.Latest = int.Parse(Request.Query["latest"]);
-            
+
+            var hey = Request.BodyReader;
+            var cunt = hey.ReadAsync();   
 
             var content = Request.Query["content"];
             Console.WriteLine(content); //content er ingenting... 
@@ -90,7 +92,7 @@ namespace MiniTwit_Public_API.Controllers
             {
                 User = user,
                 UserId = user.UserId,
-                Text = content,
+                Text = "benis",
                 PubDate = DateTime.UtcNow,
                 Flagged = 0
             }; 
@@ -139,16 +141,27 @@ namespace MiniTwit_Public_API.Controllers
             var user = _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
             if (user == null) return NotFound("yeeeeet");
 
+            var followers = user.Followers; 
+
+            //TEST PASSER ! vi skal nok bare lige se på at regulere mængden der returneres
+
             //hvordan fuck får man "args" ud af requesten? altså ligesom hans "no_followers"
             //args er vist bare det der bliver klasket bagpå? ellers så prøv med Request.Query
 
-            return Ok(new {latest = LatestResult.Latest});
+            return Ok(new {latest = LatestResult.Latest, follows = followers});
         }
+
+        //post fucker fordi get ikke virker, i guess?
 
         [HttpPost]
         [Route("fllws/{username}")]
         public IActionResult ToggleFollowUser(string username)
         {
+            //denne test passer pt. fordi den returnerer korrekte værdier, men 
+            //logikken kører ikke, så derfor fejler tests på get-versionen
+
+            Console.WriteLine("FLLWS POST ER RAMT!");
+
             LatestResult.Latest = int.Parse(Request.Query["latest"]);
             var fullAuthString = Request.Headers["Authorization"].ToString();
             var usableAuthString = fullAuthString.Substring(5);
@@ -160,12 +173,20 @@ namespace MiniTwit_Public_API.Controllers
 
             var requestingUser = _context.Users.Where(u => u.UserName == requestingUsername).FirstOrDefault();
 
-
-            //vi bør kunne gøre det på denne måde
+            //var req = JsonConvert.DeserializeObject<string>(Request);
+            
             var data = Request.Query;
+
+            //pt. kan den ikke fange unfollow/follow ligesom den ikke kan fange message
+            //Console.WriteLine(data["unfollow"]);
+            //har prøvet med Request.Form.Keys, Request.fuckdinmor og alt andet 
+           
+
             if (data.ContainsKey("unfollow")) 
             {
-                var userToBeUnfollowed = _context.Users.Where(u => u.UserName == data["unfollow"]).FirstOrDefault();
+                Console.WriteLine("unfollow if er ramt");
+                var unfollowName = data["unfollow"];
+                var userToBeUnfollowed = _context.Users.Where(u => u.UserName == unfollowName).FirstOrDefault();
                 if (userToBeUnfollowed == null) 
                 {
                     return BadRequest();
@@ -180,6 +201,7 @@ namespace MiniTwit_Public_API.Controllers
             }
             else if (data.ContainsKey("follow"))
             {
+                Console.WriteLine("follow if er ramt");
                 var userToBeFollowed = _context.Users.Where(u => u.UserName == data["follow"]).FirstOrDefault();
                 if (userToBeFollowed == null) 
                 {

@@ -7,6 +7,7 @@ from contextlib import closing
 
 
 BASE_URL = 'https://localhost:7290'
+#BASE_URL = 'https://benz.requestcatcher.com/test'
 DATABASE = "MiniTwitDB.db"
 USERNAME = 'simulator'
 PWD = 'super_safe!'
