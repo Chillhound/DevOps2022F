@@ -32,8 +32,6 @@ namespace MiniTwit_Public_API.Controllers
         {
             LatestResult.Latest = int.Parse(Request.Query["latest"]);
 
-
-            //TODO: skal latest opdateres? I så fald: hvordan?
             var messages = _context.Messages.Where(m => m.Flagged == 0).Select(m => new {content = m.Text, user = m.User.UserName}).ToList();
             return new JsonResult(messages);
         }
@@ -42,20 +40,20 @@ namespace MiniTwit_Public_API.Controllers
         [Route("/latest")]
         public ActionResult GetLatest()
         {
-            return Ok(new {latest = LatestResult.Latest}); //VICTORY! 
+            return Ok(new {latest = LatestResult.Latest});
         }
 
         [HttpGet]
         [Route("msgs/{username}")]
         public ActionResult<ICollection<Message>> GetMessagesUser(string username)
         {
-            //Er det muligt at denne skal returnere 404 i tilfælde af ikke-eksisterende bruger?
-
-            //han trækker antallet af besker ud af "args" - hvordan får vi det? er det ligesom /endpoint?limit=12?
-
             LatestResult.Latest = int.Parse(Request.Query["latest"]);
 
             var user = _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
+            if(user == null)
+            {
+                return BadRequest();
+            }
             var messages = _context.Messages.Where(m => m.UserId == user.UserId).Where(m => m.Flagged == 0).Select(m => new {content = m.Text, user = m.User.UserName}).ToList();
             return new JsonResult(messages); 
         }
@@ -64,28 +62,10 @@ namespace MiniTwit_Public_API.Controllers
         [Route("msgs/{username}")]
         public async Task<IActionResult> PostMessages(string username)
         {   
-            //VIRKER NU, SLET ALT LORTET 
-
-            var thething = await Request.ReadFromJsonAsync<TestDTO>();
-            //Console.WriteLine("READFROMJSON :"+thething.content);
-            //testen "test_create_msg" fejler fordi beskeden der lægges ind er null,
-            //og det sker fordi jeg ikke kan finde ud af at få beskeden ud af requesten :) 
-            //hvis man indsætter en random streng manuelt, så fungerer det fint aka logikken er god nok
-            //PT. FEJLER DEN IKKE FORDI JEG HAR GIVET EN RANDOM STRENG MED
-
+            var data = await Request.ReadFromJsonAsync<apiDTO>();
             //Har taget udgangspunkt i at Helge IKKE validerer brugeren
 
-            //kan ikke fange content.. det lader til at det bliver sendt med i body, men aner ikke hvordan jeg får det ud når 
-            //den også skal fange username via params... 
-            //Console.WriteLine("POST ER RAMT BITCHES!!! - username: "+username);
             LatestResult.Latest = int.Parse(Request.Query["latest"]);
-
-            //var hey = Request.BodyReader;
-            //var cunt = hey.ReadAsync(); 
-
-
-            //var content = Request.Query["content"];
-            //Console.WriteLine(content); //content er ingenting... 
 
             var user = _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
             if (user == null) return NotFound("yeeeeet"); //Helge kigger ikke på om brugeren findes, lol - måske skal vi heller ikke
@@ -95,7 +75,7 @@ namespace MiniTwit_Public_API.Controllers
             {
                 User = user,
                 UserId = user.UserId,
-                Text = thething.content,
+                Text = data.content,
                 PubDate = DateTime.UtcNow,
                 Flagged = 0
             }; 
@@ -124,12 +104,9 @@ namespace MiniTwit_Public_API.Controllers
 
             };
 
-
             _context.Users.Add(user);
             _context.SaveChanges();
             
-            //Console.WriteLine("LATEST: "+ LatestResult.Latest);
-        
             return Ok(new {latest = lat});
         }
 
@@ -137,26 +114,16 @@ namespace MiniTwit_Public_API.Controllers
         [Route("fllws/{username}")]
         public IActionResult FollowUser(string username, int no = 100)
         {
-            Console.WriteLine("Get follow er ramt med username "+username);
+            //skal der ses på at bruge no til noget, så mængden der returneres kan justeres?
             LatestResult.Latest = int.Parse(Request.Query["latest"]);
 
             var user = _context.Users.Include(u => u.Following).Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
             if (user == null)
             {
-                Console.WriteLine("useren er åbenbart null");
                 return NotFound("yeeeeet");
             }
             var following = _context.Followers.Include(f => f.Whom).Where(f => f.WhoId == user.UserId).Select(f => f.Whom.UserName).ToList();
-            //var following = user.Following.Select(f => f.Whom.UserName);
-            //Console.WriteLine("Størrelsen af "+username+" 's followers er: "+followers.Count());
-            foreach(var follower in following)
-            {
-                Console.WriteLine("det er dem jeg følger: "+follower);
-            }
-            //TEST PASSER ! vi skal nok bare lige se på at regulere mængden der returneres
 
-            //hvordan fuck får man "args" ud af requesten? altså ligesom hans "no_followers"
-            //args er vist bare det der bliver klasket bagpå? ellers så prøv med Request.Query
             return Ok(new {latest = LatestResult.Latest, follows = following});
         }
 
@@ -165,38 +132,18 @@ namespace MiniTwit_Public_API.Controllers
         [Route("fllws/{username}")]
         public async Task<IActionResult> ToggleFollowUser(string username)
         {
-            //denne test passer pt. fordi den returnerer korrekte værdier, men 
-            //logikken kører ikke, så derfor fejler tests på get-versionen
-
-            Console.WriteLine("FLLWS POST ER RAMT!");
-
             LatestResult.Latest = int.Parse(Request.Query["latest"]);
-            var fullAuthString = Request.Headers["Authorization"].ToString();
-            var usableAuthString = fullAuthString.Substring(5);
-            var decodedBytes = System.Convert.FromBase64String(usableAuthString);
-            var decoded = System.Text.Encoding.UTF8.GetString(decodedBytes);
-            var usernameAndPassword = decoded.Split(":");
-            var requestingUsername = usernameAndPassword[0];
-            var requestingPassword = usernameAndPassword[1];
-            //Console.WriteLine(requestingUsername);
-            //del del herover der dealer med auth er nok unødvendig 
 
             var requestingUser = _context.Users.Include(u => u.Following).Where(u => u.UserName == username).FirstOrDefault();
-            if(requestingUser == null) Console.WriteLine("Jeg er null :((");
-            //var req = JsonConvert.DeserializeObject<string>(Request);
-            var thething = await Request.ReadFromJsonAsync<TestDTO>();
-
-            //pt. kan den ikke fange unfollow/follow ligesom den ikke kan fange message
-            //Console.WriteLine(data["unfollow"]);
-            //har prøvet med Request.Form.Keys, Request.fuckdinmor og alt andet 
-           
-            Console.WriteLine("FOLLOW"+thething.follow);
-            Console.WriteLine("UNFOLLOW"+thething.unfollow);
-
-            if (thething.unfollow != null) 
+            if(requestingUser == null)
             {
-                Console.WriteLine("unfollow if er ramt - "+username+" skal unollow "+thething.unfollow);
-                var unfollowName = thething.unfollow;
+                return BadRequest("User does not exist");
+            } 
+            var data = await Request.ReadFromJsonAsync<apiDTO>();
+
+            if (data.unfollow != null) 
+            {
+                var unfollowName = data.unfollow;
                 var userToBeUnfollowed = _context.Users.Where(u => u.UserName == unfollowName).FirstOrDefault();
                 if (userToBeUnfollowed == null) 
                 {
@@ -207,10 +154,9 @@ namespace MiniTwit_Public_API.Controllers
                 _context.Followers.Remove(following);
                 _context.SaveChanges();
             }
-            else if (thething.follow != null)
+            else if (data.follow != null)
             {
-                Console.WriteLine("follow if er ramt - "+username+" skal follow "+thething.follow);
-                var followName = thething.follow;
+                var followName = data.follow;
                 var userToBeFollowed = _context.Users.Include(u => u.Followers).Where(u => u.UserName == followName).FirstOrDefault();
                 if (userToBeFollowed == null) 
                 {
@@ -246,7 +192,7 @@ namespace MiniTwit_Public_API.Controllers
 
         }
 
-        public class TestDTO
+        private class apiDTO
         {
             [JsonPropertyName("content")]
             public string content {get; set;}
