@@ -146,7 +146,8 @@ namespace MiniTwit_Public_API.Controllers
                 Console.WriteLine("useren er åbenbart null");
                 return NotFound("yeeeeet");
             }
-            var following = user.Following.Select(f => f.Whom.UserName);
+            var following = _context.Followers.Include(f => f.Whom).Where(f => f.WhoId == user.UserId).Select(f => f.Whom.UserName).ToList();
+            //var following = user.Following.Select(f => f.Whom.UserName);
             //Console.WriteLine("Størrelsen af "+username+" 's followers er: "+followers.Count());
             foreach(var follower in following)
             {
@@ -223,8 +224,8 @@ namespace MiniTwit_Public_API.Controllers
                     Who = requestingUser,
                     Whom = userToBeFollowed
                 };
-                requestingUser.Following.Add(newFollowing);
-                userToBeFollowed.Followers.Add(newFollowing);
+                //requestingUser.Following.Add(newFollowing); //nok unødvendig
+                //userToBeFollowed.Followers.Add(newFollowing); //nok unødvendig
                 _context.Followers.Add(newFollowing);
                 _context.SaveChanges();
             }
