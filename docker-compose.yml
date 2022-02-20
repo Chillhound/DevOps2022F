@@ -1,5 +1,4 @@
-version: '3.9'
-
+version: "3.9"
 
 services:
   db: 
@@ -17,11 +16,15 @@ services:
   api:
     container_name: "api"
     build:
-      context: . 
+      context: .
       dockerfile: ./Dockerfile.api
-    ports: 
+    ports:
       - 8080:80
-    depends_on:
-      - db
 
+  frontend:
+    container_name: "frontend"
+    build:
+      context: frontend
+    ports:
+      - 3000:80
 #api kan kaldes via url http://localhost:8080 f.eks. http://localhost:8080/user/usermessages

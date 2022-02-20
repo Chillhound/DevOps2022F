@@ -13,9 +13,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connection = @"Server=db;Database=master;User=sa;Password=Belnis12456!;";
+
 builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite")));
-//builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlServer(connection));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -29,6 +28,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     };
                 });
 
+builder.Services.AddCors(options =>
+    options.AddPolicy("localhost", builder =>
+    {
+        builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    })
+);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,15 +44,17 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("localhost");
 }
 
+app.UseCors("localhost");
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<MiniTwitContext>();
     context.Database.EnsureCreated();
-   
+
 }
 
 app.UseHttpsRedirection();
