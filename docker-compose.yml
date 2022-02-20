@@ -11,6 +11,14 @@ services:
     ports:
       - 8080:80
 
+  sim_api:
+    container_name: "sim-api"
+    build: 
+      context: .
+      dockerfile: ./Dockerfile_simapi
+    ports:
+      - 8081:81  
+
   frontend:
     container_name: "frontend"
     build:
