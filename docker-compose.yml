@@ -1,23 +1,13 @@
 version: "3.9"
 
 services:
-  db: 
-    container_name: "db"
-    image: mcr.microsoft.com/azure-sql-edge:latest
-    environment: 
-      MSSQL_SA_PASSWORD: "Belnis12456!"
-      ACCEPT_EULA: "Y"
-      MSSQL_PID: "Developer"
-    # container_name: "db"
-    # image: keinos/sqlite3
-    # ports:
-    #   - 8001:8001
-
   api:
     container_name: "api"
     build:
       context: .
       dockerfile: ./Dockerfile.api
+    environment:
+      - IP
     ports:
       - 8080:80
 
@@ -25,6 +15,8 @@ services:
     container_name: "frontend"
     build:
       context: frontend
+    environment:
+      - REACT_APP_BASE_URL
     ports:
       - 3000:80
 #api kan kaldes via url http://localhost:8080 f.eks. http://localhost:8080/user/usermessages
