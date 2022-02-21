@@ -96,6 +96,12 @@ namespace MiniTwit_Public_API.Controllers
             if (userDTO == null) return BadRequest();
             string hashed = GetHash(userDTO.pwd);
 
+            var alreadyExists = _context.Users.Where(u => u.UserName == userDTO.username).FirstOrDefault();
+            if (alreadyExists != null)
+            {
+                return BadRequest();
+            }
+
             User user = new User
             {
                 Email = userDTO.email,

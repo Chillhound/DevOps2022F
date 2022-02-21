@@ -14,7 +14,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite")));
 
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,8 +22,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
