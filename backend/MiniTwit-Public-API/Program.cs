@@ -11,8 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite")));
-
+builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Sqlserver")));
 
 var app = builder.Build();
 
@@ -21,6 +20,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<MiniTwitContext>();
+    context.Database.EnsureCreated();
 }
 
 app.UseAuthorization();

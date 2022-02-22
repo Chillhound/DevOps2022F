@@ -13,8 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite")));
+builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Sqlserver")));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -31,7 +30,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddCors(options =>
     options.AddPolicy("localhost", builder =>
     {
-        builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+        builder.AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     })
@@ -56,8 +55,6 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 

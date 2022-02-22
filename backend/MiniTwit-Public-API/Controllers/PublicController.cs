@@ -30,8 +30,13 @@ namespace MiniTwit_Public_API.Controllers
         [Route("/msgs")]
         public ActionResult<ICollection<Message>> GetMessages()
         {
-            LatestResult.Latest = int.Parse(Request.Query["latest"]);
-
+            int tmp; 
+            var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
+            if(hasLatest)
+            {
+                LatestResult.Latest = tmp;
+            }
+            
             var messages = _context.Messages.Where(m => m.Flagged == 0).Select(m => new {content = m.Text, user = m.User.UserName}).ToList();
             return new JsonResult(messages);
         }
@@ -47,8 +52,12 @@ namespace MiniTwit_Public_API.Controllers
         [Route("msgs/{username}")]
         public ActionResult<ICollection<Message>> GetMessagesUser(string username)
         {
-            LatestResult.Latest = int.Parse(Request.Query["latest"]);
-
+            int tmp; 
+            var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
+            if(hasLatest)
+            {
+                LatestResult.Latest = tmp;
+            }
             var user = _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
             if(user == null)
             {
@@ -65,7 +74,12 @@ namespace MiniTwit_Public_API.Controllers
             var data = await Request.ReadFromJsonAsync<apiDTO>();
             //Har taget udgangspunkt i at Helge IKKE validerer brugeren
 
-            LatestResult.Latest = int.Parse(Request.Query["latest"]);
+            int tmp; 
+            var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
+            if(hasLatest)
+            {
+                LatestResult.Latest = tmp;
+            }
 
             var user = _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
             if (user == null) return NotFound("yeeeeet"); //Helge kigger ikke på om brugeren findes, lol - måske skal vi heller ikke
@@ -90,8 +104,12 @@ namespace MiniTwit_Public_API.Controllers
         [Produces("application/json")] //tror ikke det er nødvendigt.. 
         public IActionResult CreateUser([FromBody] CreateUserDTO userDTO)
         { 
-            var lat = Request.Query["latest"];
-            LatestResult.Latest = int.Parse(lat);
+            int tmp; 
+            var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
+            if(hasLatest)
+            {
+                LatestResult.Latest = tmp;
+            }
 
             if (userDTO == null) return BadRequest();
             string hashed = GetHash(userDTO.pwd);
@@ -113,7 +131,7 @@ namespace MiniTwit_Public_API.Controllers
             _context.Users.Add(user);
             _context.SaveChanges();
             
-            return Ok(new {latest = lat});
+            return Ok(new {latest = LatestResult.Latest});
         }
 
         [HttpGet]
@@ -121,7 +139,12 @@ namespace MiniTwit_Public_API.Controllers
         public IActionResult FollowUser(string username, int no = 100)
         {
             //skal der ses på at bruge no til noget, så mængden der returneres kan justeres?
-            LatestResult.Latest = int.Parse(Request.Query["latest"]);
+            int tmp; 
+            var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
+            if(hasLatest)
+            {
+                LatestResult.Latest = tmp;
+            }
 
             var user = _context.Users.Include(u => u.Following).Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
             if (user == null)
@@ -138,7 +161,12 @@ namespace MiniTwit_Public_API.Controllers
         [Route("fllws/{username}")]
         public async Task<IActionResult> ToggleFollowUser(string username)
         {
-            LatestResult.Latest = int.Parse(Request.Query["latest"]);
+            int tmp = 0; 
+            var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
+            if(hasLatest)
+            {
+                LatestResult.Latest = tmp;
+            }
 
             var requestingUser = _context.Users.Include(u => u.Following).Where(u => u.UserName == username).FirstOrDefault();
             if(requestingUser == null)

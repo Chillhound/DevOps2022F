@@ -1,5 +1,6 @@
 import React from "react";
 import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
+import {useNavigate} from 'react-router-dom'
 import { baseUrl } from "./utils/config";
 
 interface FormValues {
@@ -11,6 +12,8 @@ interface FormValues {
 
 const Register: React.FC = () => {
   const [error, setError] = React.useState<string | null>(null);
+  const navigate = useNavigate();  
+
   const onSubmit: SubmitHandler<FormValues> = React.useCallback((data) => {
     setError(null);
 
@@ -22,10 +25,10 @@ const Register: React.FC = () => {
       body: JSON.stringify({
         userName: data.username,
         email: data.email,
-        password: data.password,
+        pwd: data.password,
       }),
     })
-      .then(() => (window.location.href = "http://localhost:3000/login"))
+      .then(() => navigate("/login"))
       .catch((err) => setError(err));
   }, []);
 

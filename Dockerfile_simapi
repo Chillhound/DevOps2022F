@@ -17,7 +17,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 COPY . /src
-WORKDIR /src/backend/MiniTwit-API
+WORKDIR /src/backend/MiniTwit-Public-API
 
 RUN dotnet restore
 
@@ -27,6 +27,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 COPY --from=build /app ./
 
-EXPOSE 8080
+EXPOSE 8081
 
-ENTRYPOINT ["dotnet", "MiniTwit-API.dll"]
+ENTRYPOINT ["dotnet", "MiniTwit-Public-API.dll"]
