@@ -22,7 +22,7 @@ const Register: React.FC = () => {
       body: JSON.stringify({
         userName: data.username,
         email: data.email,
-        password: data.password,
+        pwd: data.password,
       }),
     })
       .then(() => (window.location.href = "http://localhost:3000/login"))
