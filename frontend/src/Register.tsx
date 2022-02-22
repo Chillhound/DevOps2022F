@@ -25,7 +25,7 @@ const Register: React.FC = () => {
       body: JSON.stringify({
         userName: data.username,
         email: data.email,
-        password: data.password,
+        pwd: data.password,
       }),
     })
       .then(() => navigate("/login"))
