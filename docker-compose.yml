@@ -13,7 +13,7 @@ services:
     container_name: "sim-api"
     image: axrez/devops-simapi
     ports:
-      - 8081:81
+      - 8081:80
 
   frontend:
     container_name: "frontend"
@@ -21,5 +21,5 @@ services:
     environment:
       - REACT_APP_BASE_URL
     ports:
-      - 3000:80
+      - 80:80
 #api kan kaldes via url http://localhost:8080 f.eks. http://localhost:8080/user/usermessages
