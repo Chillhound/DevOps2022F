@@ -13,11 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-//builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite")));
-var connection = @"Server=db;Database=master;User=sa;Password=Belnis12456!;";
-//builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite")));
-builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlServer(connection));
+builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Sqlserver")));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
