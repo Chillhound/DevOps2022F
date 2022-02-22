@@ -3,9 +3,7 @@ version: "3.9"
 services:
   api:
     container_name: "api"
-    build:
-      context: .
-      dockerfile: ./Dockerfile.api
+    image: axrez/devops-backend
     environment:
       - IP
     ports:
@@ -13,16 +11,13 @@ services:
 
   sim_api:
     container_name: "sim-api"
-    build: 
-      context: .
-      dockerfile: ./Dockerfile_simapi
+    image: axrez/devops-simapi
     ports:
-      - 8081:81  
+      - 8081:81
 
   frontend:
     container_name: "frontend"
-    build:
-      context: frontend
+    image: axrez/devops-frontend
     environment:
       - REACT_APP_BASE_URL
     ports:
