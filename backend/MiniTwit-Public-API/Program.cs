@@ -13,7 +13,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Sqlserver")));
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
