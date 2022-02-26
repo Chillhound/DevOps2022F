@@ -17,20 +17,9 @@ services:
       dockerfile: ./Dockerfile.api
     ports:
       - 8080:80
-
   frontend:
     container_name: "frontend"
     build:
       context: frontend
     ports:
       - 3000:80
-
-  sim_api:
-    container_name: "sim-api"
-    build:
-      dockerfile: Dockerfile_simapi
-      context: .
-    #image: axrez/devops-simapi
-    ports:
-      - 8081:80
-

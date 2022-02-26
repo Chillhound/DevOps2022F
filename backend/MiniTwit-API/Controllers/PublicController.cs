@@ -125,13 +125,12 @@ namespace MiniTwit_Public_API.Controllers
                 Email = userDTO.email,
                 UserName = userDTO.username,
                 PasswordHash = hashed
-
             };
 
             _context.Users.Add(user);
             _context.SaveChanges();
             
-            return Ok(new {latest = LatestResult.Latest});
+            return NoContent();
         }
 
         [HttpGet]
