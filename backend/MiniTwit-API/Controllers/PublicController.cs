@@ -184,8 +184,12 @@ namespace MiniTwit_Public_API.Controllers
                 }
 
                 var following = _context.Followers.Where(f => f.WhoId == requestingUser.UserId && f.WhomId == userToBeUnfollowed.UserId).FirstOrDefault();
-                _context.Followers.Remove(following);
-                _context.SaveChanges();
+                if (following != null)
+                {
+                    _context.Followers.Remove(following);
+                    _context.SaveChanges();
+                }
+                
             }
             else if (data.follow != null)
             {

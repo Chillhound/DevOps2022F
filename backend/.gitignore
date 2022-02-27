@@ -479,6 +479,20 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+### fsharp ###
+lib/debug
+lib/release
+Debug
+*.suo
+*.user
+obj
+bin
+/build/
+*.exe
+!.paket/paket.bootstrapper.exe
+.ionide/
+
+
 ### VisualStudio ###
 
 # User-specific files
