@@ -2,7 +2,7 @@
 # https://circleci.com/blog/how-to-build-a-docker-image-on-circleci-2-0/
 version: 2
 jobs:
-  build-frontend:
+  build:
     docker:
      - image: cimg/base:2022.02
     resource_class: small
