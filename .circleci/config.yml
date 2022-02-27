@@ -8,6 +8,8 @@ jobs:
     resource_class: small
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 19.03.13
       - run: docker build -t axrez/frontend -f frontend/Dockerfile frontend
       - run: |
           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
