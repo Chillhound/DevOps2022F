@@ -1,5 +1,3 @@
-$ip_file = "db_ip.txt"
-
 Vagrant.configure('2') do |config|
     config.vm.synced_folder ".", "/vagrant", type: "rsync"
         
@@ -21,9 +19,6 @@ Vagrant.configure('2') do |config|
         end
 
         server.vm.provision "shell", inline: <<-SHELL
-            export IP="$(ip route get 8.8.8.8 | grep -oP 'src \K[^ ]+')"
-            export REACT_APP_BASE_URL="http://$(echo "$IP"):7166"
-
             echo "Installing Docker"
             curl -fsSL https://get.docker.com -o get-docker.sh 
             sudo sh get-docker.sh
