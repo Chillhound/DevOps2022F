@@ -4,7 +4,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: ubuntu-2004:202201-02
+     - image: cimg/base:2022.02
     resource_class: small
     steps:
       - checkout
