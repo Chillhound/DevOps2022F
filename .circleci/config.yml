@@ -44,7 +44,7 @@ workflows:
     jobs:
       - "build"
       - "build-backend"
-      - deploy-to-digital-ocean:
+      - deploy-to-digital-ocean
         #requires:
         #- build
-        #- build-backend
+        # build-backend
