@@ -7,8 +7,7 @@ jobs:
     steps:
       - checkout
       - run: docker build -t axrez/frontend -f frontend/Dockerfile frontend
-      - run: echo "$DOCKER_USER"
       - run: |
-          echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+          echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
           docker push axrez/frontend
 
