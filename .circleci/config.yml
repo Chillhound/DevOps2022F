@@ -54,6 +54,10 @@ workflows:
       - "build"
       - "build-backend"
       - deploy-to-digital-ocean
-        #requires:
-        #- build
-        # build-backend
+        requires:
+        - build
+        - build-backend
+        filters:
+              branches:
+                only:
+                  - main
