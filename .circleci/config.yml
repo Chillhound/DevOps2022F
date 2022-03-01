@@ -39,6 +39,13 @@ jobs:
           sudo apt-get update && sudo apt-get install vagrant
           vagrant plugin install vagrant-digitalocean
       - run: sudo apt-get install -y rsync
+      - add_ssh_keys:
+          fingerprints:
+            - "af:26:3f:56:e7:81:25:19:89:72:41:78:cd:4b:83:e8"
+      - run: |
+          echo "disregard ssh known_hosts warnings"
+          echo "UserKnownHostsFile=/dev/null" > ~/.ssh/config
+          echo "StrictHostKeyChecking=no">> ~/.ssh/config
       - run: vagrant ssh --command "docker-compose -f docker-compose-prod.yml up -d"
 workflows:
   version: 2
