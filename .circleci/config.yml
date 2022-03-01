@@ -4,7 +4,7 @@ version: 2
 jobs:
   build:
     docker:
-     - image: cimg/base:2022.02
+      - image: cimg/base:2022.02
     resource_class: small
     steps:
       - checkout
@@ -17,7 +17,7 @@ jobs:
 
   build-backend:
     docker:
-     - image: cimg/base:2022.02
+      - image: cimg/base:2022.02
     resource_class: small
     steps:
       - checkout
@@ -29,14 +29,13 @@ jobs:
           docker push axrez/backend
   deploy-to-digital-ocean:
     docker:
-     - image: cimg/base:2022.02
+      - image: cimg/base:2022.02
     resource_class: small
     steps:
       - run: |
-          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-          sudo apt-get update && apt-get install vagrant
-          vagrant plugin install vagrant-digitalocean
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
+        apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+        apt-get update && sudo apt-get install vagrant
       - run: vagrant rebuild
 workflows:
   version: 2
