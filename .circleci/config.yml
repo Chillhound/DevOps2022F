@@ -51,8 +51,14 @@ workflows:
   version: 2
   build:
     jobs:
-      - "build"
-      - "build-backend"
+      - build:
+          filters:
+            branches:
+              only: main
+      - build-backend:
+          filters:
+            branches:
+              only: main
       - deploy-to-digital-ocean:
           requires:
             - build
