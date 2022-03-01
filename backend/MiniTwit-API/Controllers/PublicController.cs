@@ -210,7 +210,7 @@ namespace MiniTwit_Public_API.Controllers
                 //requestingUser.Following.Add(newFollowing); //nok unødvendig
                 //userToBeFollowed.Followers.Add(newFollowing); //nok unødvendig
                 await _context.Followers.AddAsync(newFollowing);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync ();
             }
 
             return NoContent();
