@@ -28,7 +28,7 @@ namespace MiniTwit_Public_API.Controllers
 
         [HttpGet]
         [Route("/msgs")]
-        public ActionResult<ICollection<Message>> GetMessages()
+        public async Task<ActionResult<ICollection<Message>>> GetMessages()
         {
             int tmp; 
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
@@ -37,7 +37,7 @@ namespace MiniTwit_Public_API.Controllers
                 LatestResult.Latest = tmp;
             }
             
-            var messages = _context.Messages.Where(m => m.Flagged == 0).Select(m => new {content = m.Text, user = m.User.UserName}).ToList();
+            var messages = await _context.Messages.Where(m => m.Flagged == 0).Select(m => new {content = m.Text, user = m.User.UserName}).ToListAsync();
             return new JsonResult(messages);
         }
 
@@ -50,7 +50,7 @@ namespace MiniTwit_Public_API.Controllers
 
         [HttpGet]
         [Route("msgs/{username}")]
-        public ActionResult<ICollection<Message>> GetMessagesUser(string username)
+        public async Task<ActionResult<ICollection<Message>>> GetMessagesUser(string username)
         {
             int tmp; 
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
@@ -58,12 +58,12 @@ namespace MiniTwit_Public_API.Controllers
             {
                 LatestResult.Latest = tmp;
             }
-            var user = _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
+            var user = await _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefaultAsync();
             if(user == null)
             {
                 return BadRequest();
             }
-            var messages = _context.Messages.Where(m => m.UserId == user.UserId).Where(m => m.Flagged == 0).Select(m => new {content = m.Text, user = m.User.UserName}).ToList();
+            var messages = await _context.Messages.Where(m => m.UserId == user.UserId).Where(m => m.Flagged == 0).Select(m => new {content = m.Text, user = m.User.UserName}).ToListAsync();
             return new JsonResult(messages); 
         }
 
@@ -81,7 +81,7 @@ namespace MiniTwit_Public_API.Controllers
                 LatestResult.Latest = tmp;
             }
 
-            var user = _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
+            var user = await _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefaultAsync();
             if (user == null) return NotFound("yeeeeet"); //Helge kigger ikke på om brugeren findes, lol - måske skal vi heller ikke
 
 
@@ -93,8 +93,8 @@ namespace MiniTwit_Public_API.Controllers
                 PubDate = DateTime.UtcNow,
                 Flagged = 0
             }; 
-            _context.Messages.Add(message);
-            _context.SaveChanges();
+            await _context.Messages.AddAsync(message);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
@@ -102,7 +102,7 @@ namespace MiniTwit_Public_API.Controllers
         [HttpPost]
         [Route("/register")]
         [Produces("application/json")] //tror ikke det er nødvendigt.. 
-        public IActionResult CreateUser([FromBody] CreateUserDTO userDTO)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO userDTO)
         { 
             int tmp; 
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
@@ -114,7 +114,7 @@ namespace MiniTwit_Public_API.Controllers
             if (userDTO == null) return BadRequest();
             string hashed = GetHash(userDTO.pwd);
 
-            var alreadyExists = _context.Users.Where(u => u.UserName == userDTO.username).FirstOrDefault();
+            var alreadyExists = await _context.Users.Where(u => u.UserName == userDTO.username).FirstOrDefaultAsync();
             if (alreadyExists != null)
             {
                 return BadRequest();
@@ -127,15 +127,15 @@ namespace MiniTwit_Public_API.Controllers
                 PasswordHash = hashed
             };
 
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
             
             return NoContent();
         }
 
         [HttpGet]
         [Route("fllws/{username}")]
-        public IActionResult FollowUser(string username, int no = 100)
+        public async Task<IActionResult> FollowUser(string username, int no = 100)
         {
             //skal der ses på at bruge no til noget, så mængden der returneres kan justeres?
             int tmp; 
@@ -145,12 +145,12 @@ namespace MiniTwit_Public_API.Controllers
                 LatestResult.Latest = tmp;
             }
 
-            var user = _context.Users.Include(u => u.Following).Where(u => u.UserName == username).Select(u => u).FirstOrDefault();
+            var user = await _context.Users.Include(u => u.Following).Where(u => u.UserName == username).Select(u => u).FirstOrDefaultAsync();
             if (user == null)
             {
                 return NotFound("yeeeeet");
             }
-            var following = _context.Followers.Include(f => f.Whom).Where(f => f.WhoId == user.UserId).Select(f => f.Whom.UserName).ToList();
+            var following = await _context.Followers.Include(f => f.Whom).Where(f => f.WhoId == user.UserId).Select(f => f.Whom.UserName).ToListAsync();
 
             return Ok(new {latest = LatestResult.Latest, follows = following});
         }
@@ -167,7 +167,7 @@ namespace MiniTwit_Public_API.Controllers
                 LatestResult.Latest = tmp;
             }
 
-            var requestingUser = _context.Users.Include(u => u.Following).Where(u => u.UserName == username).FirstOrDefault();
+            var requestingUser = await _context.Users.Include(u => u.Following).Where(u => u.UserName == username).FirstOrDefaultAsync();
             if(requestingUser == null)
             {
                 return BadRequest("User does not exist");
@@ -177,24 +177,24 @@ namespace MiniTwit_Public_API.Controllers
             if (data.unfollow != null) 
             {
                 var unfollowName = data.unfollow;
-                var userToBeUnfollowed = _context.Users.Where(u => u.UserName == unfollowName).FirstOrDefault();
+                var userToBeUnfollowed = await _context.Users.Where(u => u.UserName == unfollowName).FirstOrDefaultAsync();
                 if (userToBeUnfollowed == null) 
                 {
                     return BadRequest();
                 }
 
-                var following = _context.Followers.Where(f => f.WhoId == requestingUser.UserId && f.WhomId == userToBeUnfollowed.UserId).FirstOrDefault();
+                var following = await _context.Followers.Where(f => f.WhoId == requestingUser.UserId && f.WhomId == userToBeUnfollowed.UserId).FirstOrDefaultAsync();
                 if (following != null)
                 {
                     _context.Followers.Remove(following);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                 }
                 
             }
             else if (data.follow != null)
             {
                 var followName = data.follow;
-                var userToBeFollowed = _context.Users.Include(u => u.Followers).Where(u => u.UserName == followName).FirstOrDefault();
+                var userToBeFollowed = await _context.Users.Include(u => u.Followers).Where(u => u.UserName == followName).FirstOrDefaultAsync();
                 if (userToBeFollowed == null) 
                 {
                     return BadRequest();
@@ -209,8 +209,8 @@ namespace MiniTwit_Public_API.Controllers
                 };
                 //requestingUser.Following.Add(newFollowing); //nok unødvendig
                 //userToBeFollowed.Followers.Add(newFollowing); //nok unødvendig
-                _context.Followers.Add(newFollowing);
-                _context.SaveChanges();
+                await _context.Followers.AddAsync(newFollowing);
+                await _context.SaveChangesAsync();
             }
 
             return NoContent();
