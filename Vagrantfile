@@ -29,8 +29,7 @@ Vagrant.configure('2') do |config|
 
             cp -r /vagrant/* $HOME
 
-            docker-compose build 
-            nohup docker-compose up
+            nohup docker-compose -f docker-compose-prod.yml up -d
         SHELL
     end
 end

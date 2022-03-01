@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MiniTwit_Public_API.Controllers
 {
-    //[Route("api/[controller]")]
+    [Route("/")]
     [ApiController]
     public class PublicController : ControllerBase
     {
