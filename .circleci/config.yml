@@ -1,0 +1,69 @@
+# Mostly directly from cirlce ci's docs
+# https://circleci.com/blog/how-to-build-a-docker-image-on-circleci-2-0/
+version: 2
+jobs:
+  build:
+    docker:
+      - image: cimg/base:2022.02
+    resource_class: small
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - run: docker build -t axrez/frontend -f frontend/Dockerfile frontend
+      - run: |
+          echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
+          docker push axrez/frontend
+
+  build-backend:
+    docker:
+      - image: cimg/base:2022.02
+    resource_class: small
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - run: docker build -t axrez/backend -f Dockerfile.api .
+      - run: |
+          echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
+          docker push axrez/backend
+  deploy-to-digital-ocean:
+    docker:
+      - image: cimg/base:2022.02
+    resource_class: small
+    steps:
+      - checkout
+      - run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install vagrant
+          vagrant plugin install vagrant-digitalocean
+      - run: sudo apt-get install -y rsync
+      - add_ssh_keys:
+          fingerprints:
+            - "af:26:3f:56:e7:81:25:19:89:72:41:78:cd:4b:83:e8"
+      - run: |
+          echo "disregard ssh known_hosts warnings"
+          echo "UserKnownHostsFile=/dev/null" > ~/.ssh/config
+          echo "StrictHostKeyChecking=no">> ~/.ssh/config
+      - run: ssh root@157.245.27.14 -i ~/.ssh/id_rsa_af263f56e781251989724178cd4b83e8 "docker-compose -f docker-compose-prod.yml up -d"
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: main
+      - build-backend:
+          filters:
+            branches:
+              only: main
+      - deploy-to-digital-ocean:
+          requires:
+            - build
+            - build-backend
+          filters:
+             branches:
+               only: main # only deploy on the main branch
+
