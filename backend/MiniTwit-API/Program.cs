@@ -13,7 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<MiniTwitContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Sqlserver")));
+builder.Services.AddDbContextPool<MiniTwitContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Sqlserver")));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
