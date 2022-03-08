@@ -10,7 +10,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 19.03.13
-      - run: docker build -t axrez/frontend -f frontend/Dockerfile frontend
+      - run: docker build -t axrez/devops-frontend -f frontend/Dockerfile frontend
       - run: |
           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
           docker push axrez/devops-frontend
@@ -23,7 +23,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 19.03.13
-      - run: docker build -t axrez/backend -f Dockerfile.api .
+      - run: docker build -t axrez/devops-backend -f Dockerfile.api .
       - run: |
           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
           docker push axrez/devops-backend
