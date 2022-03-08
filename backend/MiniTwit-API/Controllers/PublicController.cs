@@ -37,7 +37,7 @@ namespace MiniTwit_Public_API.Controllers
                 LatestResult.Latest = tmp;
             }
             
-            var messages = await _context.Messages.Where(m => m.Flagged == 0).Select(m => new {content = m.Text, user = m.User.UserName}).ToListAsync();
+            var messages = await _context.Messages.Where(m => m.Flagged == 0).OrderByDescending(x => x.PubDate).Select(m => new {content = m.Text, pub_date = m.PubDate, user = m.User.UserName}).ToListAsync();
             return new JsonResult(messages);
         }
 
@@ -63,7 +63,7 @@ namespace MiniTwit_Public_API.Controllers
             {
                 return BadRequest();
             }
-            var messages = await _context.Messages.Where(m => m.UserId == user.UserId).Where(m => m.Flagged == 0).Select(m => new {content = m.Text, user = m.User.UserName}).ToListAsync();
+            var messages = await _context.Messages.Where(m => m.UserId == user.UserId).Where(m => m.Flagged == 0).OrderByDescending(x => x.PubDate).Select(m => new {content = m.Text,pub_date = m.PubDate, user = m.User.UserName}).ToListAsync();
             return new JsonResult(messages); 
         }
 
@@ -152,7 +152,7 @@ namespace MiniTwit_Public_API.Controllers
             }
             var following = await _context.Followers.Include(f => f.Whom).Where(f => f.WhoId == user.UserId).Select(f => f.Whom.UserName).ToListAsync();
 
-            return Ok(new {latest = LatestResult.Latest, follows = following});
+            return Ok(new {follows = following});
         }
 
         
@@ -170,7 +170,7 @@ namespace MiniTwit_Public_API.Controllers
             var requestingUser = await _context.Users.Include(u => u.Following).Where(u => u.UserName == username).FirstOrDefaultAsync();
             if(requestingUser == null)
             {
-                return BadRequest("User does not exist");
+                return NotFound("User does not exist");
             } 
             var data = await Request.ReadFromJsonAsync<apiDTO>();
 
@@ -180,7 +180,7 @@ namespace MiniTwit_Public_API.Controllers
                 var userToBeUnfollowed = await _context.Users.Where(u => u.UserName == unfollowName).FirstOrDefaultAsync();
                 if (userToBeUnfollowed == null) 
                 {
-                    return BadRequest();
+                    return NotFound();
                 }
 
                 var following = await _context.Followers.Where(f => f.WhoId == requestingUser.UserId && f.WhomId == userToBeUnfollowed.UserId).FirstOrDefaultAsync();
@@ -197,8 +197,12 @@ namespace MiniTwit_Public_API.Controllers
                 var userToBeFollowed = await _context.Users.Include(u => u.Followers).Where(u => u.UserName == followName).FirstOrDefaultAsync();
                 if (userToBeFollowed == null) 
                 {
-                    return BadRequest();
+                    return NotFound();
                 }
+
+                var exists = await _context.Followers.AnyAsync(e => e.WhoId == requestingUser.UserId && e.WhomId == userToBeFollowed.UserId);
+
+                if (exists) return NoContent();
 
                 var newFollowing = new Follower
                 {
