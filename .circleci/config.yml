@@ -13,7 +13,7 @@ jobs:
       - run: docker build -t axrez/frontend -f frontend/Dockerfile frontend
       - run: |
           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
-          docker push axrez/frontend
+          docker push axrez/devops-frontend
 
   build-backend:
     docker:
@@ -26,7 +26,7 @@ jobs:
       - run: docker build -t axrez/backend -f Dockerfile.api .
       - run: |
           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
-          docker push axrez/backend
+          docker push axrez/devops-backend
   deploy-to-digital-ocean:
     docker:
       - image: cimg/base:2022.02
