@@ -93,7 +93,7 @@ namespace MiniTwit_Public_API.Controllers
                 PubDate = DateTime.UtcNow,
                 Flagged = 0
             }; 
-            await _context.Messages.AddAsync(message);
+            _context.Messages.Add(message);
             await _context.SaveChangesAsync();
 
             return NoContent();
