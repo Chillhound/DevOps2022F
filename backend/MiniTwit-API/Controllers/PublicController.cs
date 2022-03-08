@@ -200,6 +200,10 @@ namespace MiniTwit_Public_API.Controllers
                     return NotFound();
                 }
 
+                var exists = await _context.Followers.AnyAsync(e => e.WhoId == requestingUser.UserId && e.WhomId == userToBeFollowed.UserId);
+
+                if (exists) return NoContent();
+
                 var newFollowing = new Follower
                 {
                     WhoId = requestingUser.UserId,
