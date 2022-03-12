@@ -40,6 +40,8 @@ services:
      - 3000:3000  
    networks:
      - main
+   volumes:
+    - grafana-storage:/var/lib/grafana
 
   prometheus:
     image: prom/prometheus
@@ -51,4 +53,7 @@ services:
     networks:
       - main    
         
+
+volumes:
+  grafana-storage:
 
