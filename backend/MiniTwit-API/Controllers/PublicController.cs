@@ -12,6 +12,7 @@ using Domain.Models;
 using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Prometheus;
 
 namespace MiniTwit_Public_API.Controllers
 {
@@ -20,6 +21,8 @@ namespace MiniTwit_Public_API.Controllers
     public class PublicController : ControllerBase
     {
         private readonly MiniTwitContext _context;
+        private static readonly Counter RequestLatest = Metrics.CreateCounter("Latest", "Latest man");
+        private static readonly Counter RequestCountUsers = Metrics.CreateCounter("Num_users", "The total number of users created");
 
         public PublicController(MiniTwitContext context)
         {
@@ -56,6 +59,7 @@ namespace MiniTwit_Public_API.Controllers
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
             if(hasLatest)
             {
+                RequestLatest.IncTo(tmp);
                 LatestResult.Latest = tmp;
             }
             var user = await _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefaultAsync();
@@ -78,6 +82,7 @@ namespace MiniTwit_Public_API.Controllers
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
             if(hasLatest)
             {
+                RequestLatest.IncTo(tmp);
                 LatestResult.Latest = tmp;
             }
 
@@ -108,6 +113,7 @@ namespace MiniTwit_Public_API.Controllers
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
             if(hasLatest)
             {
+                RequestLatest.IncTo(tmp);
                 LatestResult.Latest = tmp;
             }
 
@@ -129,7 +135,9 @@ namespace MiniTwit_Public_API.Controllers
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
-            
+            RequestCountUsers.Inc();
+
+
             return NoContent();
         }
 
@@ -142,6 +150,7 @@ namespace MiniTwit_Public_API.Controllers
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
             if(hasLatest)
             {
+                RequestLatest.IncTo(tmp);
                 LatestResult.Latest = tmp;
             }
 
@@ -164,6 +173,7 @@ namespace MiniTwit_Public_API.Controllers
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
             if(hasLatest)
             {
+                RequestLatest.IncTo(tmp);
                 LatestResult.Latest = tmp;
             }
 

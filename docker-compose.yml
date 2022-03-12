@@ -1,5 +1,11 @@
 version: "3.9"
 
+#der skal laves volume til grafana
+
+networks: 
+  main:
+    name: minitwat
+
 services:
   db: 
       container_name: "db"
@@ -26,4 +32,30 @@ services:
     build:
       context: frontend
     ports:
-      - 3000:80
+      - 3001:80
+
+  grafana:
+   image: grafana/grafana:latest
+   ports:
+     - 3000:3000  
+   networks:
+     - main
+   volumes:
+    - grafana-storage:/var/lib/grafana
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - prom:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - main    
+        
+
+volumes:
+  grafana-storage:
+  prom: 
+
