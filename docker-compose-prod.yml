@@ -45,3 +45,6 @@ services:
     networks:
       - main    
 
+volumes:
+  grafana-storage:
+  prom: 
