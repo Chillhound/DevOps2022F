@@ -13,6 +13,7 @@ services:
         MSSQL_SA_PASSWORD: "Belnis12456!"
         ACCEPT_EULA: "Y"
         MSSQL_PID: "Developer" 
+        
   api:
     container_name: "api"
     image: axrez/devops-backend
