@@ -44,8 +44,9 @@ services:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - prom:/prometheus
-      - ./prometheus.yml
+      - prome:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    #command: --web.enable-lifecycle  --config.file=prometheus.yml  
     ports:
       - "9090:9090"
     networks:
@@ -53,4 +54,4 @@ services:
 
 volumes:
   grafana-storage:
-  prom: 
+  prome: 
