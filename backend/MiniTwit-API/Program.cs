@@ -56,11 +56,15 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 
 }
-app.UseEndpoints(endpoints =>
-endpoints.MapMetrics()
-);
+
 app.UseRouting();
 app.UseHttpMetrics();
+app.UseMetricServer();
+
+app.UseEndpoints(endpoints =>
+    endpoints.MapMetrics()
+);
+
 app.UseAuthentication();
 
 app.UseAuthorization();
