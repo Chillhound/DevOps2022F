@@ -13,6 +13,7 @@ services:
         MSSQL_SA_PASSWORD: "Belnis12456!"
         ACCEPT_EULA: "Y"
         MSSQL_PID: "Developer" 
+        
   api:
     container_name: "api"
     image: axrez/devops-backend
@@ -44,7 +45,7 @@ services:
     container_name: prometheus
     volumes:
       - prom:/prometheus
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml
     ports:
       - "9090:9090"
     networks:
