@@ -2,6 +2,7 @@ using DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Prometheus;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,7 +56,11 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 
 }
-
+app.UseEndpoints(endpoints =>
+endpoints.MapMetrics()
+);
+app.UseRouting();
+app.UseHttpMetrics();
 app.UseAuthentication();
 
 app.UseAuthorization();
