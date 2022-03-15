@@ -8,6 +8,7 @@ jobs:
     resource_class: small
     steps:
       - checkout
+      - sonarcloud/scan
       - setup_remote_docker:
           version: 19.03.13
       - run: docker build -t axrez/devops-frontend -f frontend/Dockerfile frontend
@@ -20,6 +21,7 @@ jobs:
     resource_class: small
     steps:
       - checkout
+      - sonarcloud/scan
       - setup_remote_docker:
           version: 19.03.13
       - run: docker build -t axrez/devops-backend -f Dockerfile.api .
@@ -33,7 +35,6 @@ jobs:
     resource_class: small
     steps:
       - checkout
-      - sonarcloud/scan
       - run: |
           curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
           sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
