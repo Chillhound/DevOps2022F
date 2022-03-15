@@ -9,4 +9,5 @@ jobs:
       run: npm i
     - name: Run ESLint
       run: npm run lint
-    - name: npm run build
+    - name: Run build
+      run: npm run build
