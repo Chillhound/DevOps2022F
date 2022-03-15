@@ -14,7 +14,7 @@ jobs:
       - run: |
           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
           docker push axrez/devops-frontend
-
+      - sonarcloud/scan
   build-backend:
     docker:
       - image: cimg/base:2022.02
@@ -27,6 +27,7 @@ jobs:
       - run: |
           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
           docker push axrez/devops-backend
+      - sonarcloud/scan
   deploy-to-digital-ocean:
     docker:
       - image: cimg/base:2022.02
@@ -47,15 +48,21 @@ jobs:
           echo "UserKnownHostsFile=/dev/null" > ~/.ssh/config
           echo "StrictHostKeyChecking=no">> ~/.ssh/config
       - run: ssh root@157.245.27.14 -i ~/.ssh/id_rsa_af263f56e781251989724178cd4b83e8 "docker-compose -f docker-compose-prod.yml up -d"
+
+orbs:
+  sonarcloud: sonarsource/sonarcloud@1.0.3
+
 workflows:
   version: 2
   build:
     jobs:
       - build:
+          context: SonarCloud 
           filters:
             branches:
               only: main
       - build-backend:
+          context: SonarCloud
           filters:
             branches:
               only: main
