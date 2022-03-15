@@ -5,10 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - run: cd frontend
     - name: Install modules
+      working-directory: ./frontend
       run: npm i
     - name: Run ESLint
+      working-directory: ./frontend
       run: npm run lint
     - name: Run build
+      working-directory: ./frontend
       run: npm run build
