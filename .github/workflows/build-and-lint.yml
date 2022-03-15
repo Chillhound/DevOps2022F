@@ -5,6 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - run: cd frontend
     - name: Install modules
       run: npm i
     - name: Run ESLint
