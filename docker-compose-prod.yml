@@ -18,6 +18,8 @@ services:
     container_name: "api"
     image: axrez/devops-backend
     restart: on-failure
+    environment:
+      AZURE:$AZURE
     depends_on:
       - db
     ports:
