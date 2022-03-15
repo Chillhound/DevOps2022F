@@ -8,6 +8,7 @@ jobs:
     resource_class: small
     steps:
       - checkout
+      - sonarcloud/scan
       - setup_remote_docker:
           version: 19.03.13
       - run: docker build -t axrez/devops-frontend -f frontend/Dockerfile frontend
@@ -20,7 +21,6 @@ jobs:
     resource_class: small
     steps:
       - checkout
-      - sonarcloud/scan
       - setup_remote_docker:
           version: 19.03.13
       - run: docker build -t axrez/devops-backend -f Dockerfile.api .
