@@ -36,7 +36,7 @@ const TwitBox: React.FC<{ user: User; onUpdate?: () => void }> = ({
   return (
     <>
       <div className="twitbox">
-        <h3>What's on your mind {user.userName}</h3>
+        <h3>What&apos;s on your mind {user.userName}</h3>
         <form onSubmit={handleSubmit}>
           <p>
             <input

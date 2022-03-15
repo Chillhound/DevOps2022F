@@ -5,6 +5,7 @@ import PersonalTimeline from "./PersonalTimeline";
 import PublicTimeline from "./PublicTimeline";
 import Register from "./Register";
 import UserTimeline from "./UserTimeline";
+import React from "react";
 
 const Router = () => (
   <BrowserRouter>
