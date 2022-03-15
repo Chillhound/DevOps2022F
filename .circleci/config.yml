@@ -57,18 +57,18 @@ workflows:
   build:
     jobs:
       - build:
-          context: SonarCloud 
+          context: SonarCloud
+      - build-frontend:
           filters:
             branches:
               only: main
       - build-backend:
-          context: SonarCloud
           filters:
             branches:
               only: main
       - deploy-to-digital-ocean:
           requires:
-            - build
+            - build-frontend
             - build-backend
           filters:
              branches:
