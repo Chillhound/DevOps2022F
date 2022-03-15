@@ -24,6 +24,7 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
       - run: docker build -t axrez/devops-backend -f Dockerfile.api .
+      - run: docker scan --file Dockerfile.api --severity high axrez/devops-backend
       - run: |
           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
           docker push axrez/devops-backend
