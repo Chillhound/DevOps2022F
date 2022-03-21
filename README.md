@@ -1,4 +1,5 @@
 # DevOps 2022 - Group F
+[![BCH compliance](https://bettercodehub.com/edge/badge/Chillhound/DevOps2022F?branch=main)](https://bettercodehub.com/)
 ## About
 ### Build with
 * [React.js](https://reactjs.org/)
