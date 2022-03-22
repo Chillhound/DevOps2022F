@@ -39,8 +39,9 @@ namespace MiniTwit_Public_API.Controllers
             {
                 LatestResult.Latest = tmp;
             }
-            
-            var messages = await _context.Messages.Where(m => m.Flagged == 0).OrderByDescending(x => x.PubDate).Select(m => new {content = m.Text, pub_date = m.PubDate, user = m.User.UserName}).ToListAsync();
+            var limit = 100;
+
+            var messages = await _context.Messages.Where(m => m.Flagged == 0).OrderByDescending(x => x.PubDate).Select(m => new {content = m.Text, pub_date = m.PubDate, user = m.User.UserName}).Take(limit).ToListAsync();
             return new JsonResult(messages);
         }
 
