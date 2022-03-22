@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Prometheus;
+using Serilog;
+using Serilog.Formatting.Elasticsearch;
+using Serilog.Sinks.Elasticsearch;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +40,18 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     })
 );
+
+
+// Setup serrlog and set the sink to elasticSearch 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200")){
+             AutoRegisterTemplate = true,
+             AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
+             CustomFormatter = new ElasticsearchJsonFormatter()
+             
+    }).CreateLogger();
+
+builder.Host.UseSerilog(Log.Logger);
 
 var app = builder.Build();
 
