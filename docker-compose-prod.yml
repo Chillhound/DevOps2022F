@@ -6,32 +6,44 @@ networks:
 
 
 services:
-  db: 
-      container_name: "db"
-      image: mcr.microsoft.com/azure-sql-edge
-      environment: 
-        MSSQL_SA_PASSWORD: "Belnis12456!"
-        ACCEPT_EULA: "Y"
-        MSSQL_PID: "Developer" 
-        
+  elasticsearch:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.2.0"
+    container_name: "elasticsearch"
+    environment:
+      - discovery.type=single-node
+    ports: 
+      - 9200:9200
+    volumes:
+        - elk_elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - main
+
+  kibana:
+   container_name: kibana
+   image: "docker.elastic.co/kibana/kibana:7.2.0"
+   ports:
+    - 5601:5601
+   depends_on:
+    - elasticsearch
+   environment:
+    elasticsearch.hosts: '["http://elasticsearch:9200"]'
+   networks:
+    - main
+ 
   api:
     container_name: "api"
     image: axrez/devops-backend
     restart: on-failure
     environment:
-      AZURE:$AZURE
-    depends_on:
-      - db
+     -  AZURE:"Server=tcp:devops-server-2022.database.windows.net,1433;Initial Catalog=devopsDB;Persist Security Info=False;User ID=admin-22;Password=Havetraktor1433!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
     ports:
       - 8080:80
 
   frontend:
     container_name: "frontend"
     image: axrez/devops-frontend
-    depends_on:
-      - db
     ports:
-      - 8081:80
+      - 80:80
 
   grafana:
    image: grafana/grafana:latest
@@ -56,4 +68,5 @@ services:
 
 volumes:
   grafana-storage:
-  prome: 
+  prome:
+  elk_elasticsearch:
