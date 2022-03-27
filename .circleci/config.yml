@@ -1,20 +1,20 @@
 # Mostly directly from cirlce ci's docs
 # https://circleci.com/blog/how-to-build-a-docker-image-on-circleci-2-0/
-version: 2
+version: 2.1
 jobs:
-  build:
+  build-frontend:
     docker:
       - image: cimg/base:2022.02
     resource_class: small
     steps:
       - checkout
+      - sonarcloud/scan
       - setup_remote_docker:
           version: 19.03.13
       - run: docker build -t axrez/devops-frontend -f frontend/Dockerfile frontend
       - run: |
           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
           docker push axrez/devops-frontend
-
   build-backend:
     docker:
       - image: cimg/base:2022.02
@@ -24,6 +24,7 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
       - run: docker build -t axrez/devops-backend -f Dockerfile.api .
+      - run: docker scan --file Dockerfile.api --severity high axrez/devops-backend
       - run: |
           echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USERNAME --password-stdin
           docker push axrez/devops-backend
@@ -46,22 +47,28 @@ jobs:
           echo "disregard ssh known_hosts warnings"
           echo "UserKnownHostsFile=/dev/null" > ~/.ssh/config
           echo "StrictHostKeyChecking=no">> ~/.ssh/config
-      - run: ssh root@157.245.27.14 -i ~/.ssh/id_rsa_af263f56e781251989724178cd4b83e8 "docker-compose -f docker-compose-prod.yml up -d"
+      - run: ssh root@157.245.27.14 -i ~/.ssh/id_rsa_af263f56e781251989724178cd4b83e8 "docker pull axrez/devops-backend && docker pull axrez/devops-frontend && docker-compose -f docker-compose-prod.yml up -d"
+
+orbs:
+  sonarcloud: sonarsource/sonarcloud@1.0.3
+
 workflows:
   version: 2
   build:
     jobs:
-      - build:
+      - build-frontend:
           filters:
             branches:
               only: main
+          context: SonarCloud
       - build-backend:
           filters:
             branches:
               only: main
+          context: SonarCloud
       - deploy-to-digital-ocean:
           requires:
-            - build
+            - build-frontend
             - build-backend
           filters:
              branches:

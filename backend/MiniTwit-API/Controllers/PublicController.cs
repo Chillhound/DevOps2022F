@@ -39,8 +39,9 @@ namespace MiniTwit_Public_API.Controllers
             {
                 LatestResult.Latest = tmp;
             }
-            
-            var messages = await _context.Messages.Where(m => m.Flagged == 0).OrderByDescending(x => x.PubDate).Select(m => new {content = m.Text, pub_date = m.PubDate, user = m.User.UserName}).ToListAsync();
+            var limit = 100;
+
+            var messages = await _context.Messages.Where(m => m.Flagged == 0).OrderByDescending(x => x.PubDate).Select(m => new {content = m.Text, pub_date = m.PubDate, user = m.User.UserName}).Take(limit).ToListAsync();
             return new JsonResult(messages);
         }
 
@@ -87,7 +88,7 @@ namespace MiniTwit_Public_API.Controllers
             }
 
             var user = await _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefaultAsync();
-            if (user == null) return NotFound("yeeeeet"); //Helge kigger ikke på om brugeren findes, lol - måske skal vi heller ikke
+            //if (user == null) return Forbid(); //Helge kigger ikke på om brugeren findes, lol - måske skal vi heller ikke
 
 
             var message = new Message
@@ -157,7 +158,7 @@ namespace MiniTwit_Public_API.Controllers
             var user = await _context.Users.Include(u => u.Following).Where(u => u.UserName == username).Select(u => u).FirstOrDefaultAsync();
             if (user == null)
             {
-                return NotFound("yeeeeet");
+                return NotFound();
             }
             var following = await _context.Followers.Include(f => f.Whom).Where(f => f.WhoId == user.UserId).Select(f => f.Whom.UserName).ToListAsync();
 
@@ -180,7 +181,7 @@ namespace MiniTwit_Public_API.Controllers
             var requestingUser = await _context.Users.Include(u => u.Following).Where(u => u.UserName == username).FirstOrDefaultAsync();
             if(requestingUser == null)
             {
-                return NotFound("User does not exist");
+                return NotFound();
             } 
             var data = await Request.ReadFromJsonAsync<apiDTO>();
 
@@ -199,9 +200,8 @@ namespace MiniTwit_Public_API.Controllers
                     _context.Followers.Remove(following);
                     await _context.SaveChangesAsync();
                 }
-                
             }
-            else if (data.follow != null)
+            else
             {
                 var followName = data.follow;
                 var userToBeFollowed = await _context.Users.Include(u => u.Followers).Where(u => u.UserName == followName).FirstOrDefaultAsync();

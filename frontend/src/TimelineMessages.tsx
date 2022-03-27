@@ -21,7 +21,7 @@ const TimelineMessages: React.FC<{ messages: any[] }> = ({ messages }) => {
         ))}
         {messages.length === 0 ? (
           <li>
-            <em>There's no message so far.</em>
+            <em>There&apos;s no message so far.</em>
           </li>
         ) : null}
       </ul>
