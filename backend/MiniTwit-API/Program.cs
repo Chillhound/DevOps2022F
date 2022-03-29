@@ -45,7 +45,7 @@ builder.Services.AddCors(options =>
 // Setup serrlog and set the sink to elasticSearch 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://127.0.0.1:9200")){
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://172.30.0.2:9200")){
              AutoRegisterTemplate = true,
              AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
              CustomFormatter = new ElasticsearchJsonFormatter()
