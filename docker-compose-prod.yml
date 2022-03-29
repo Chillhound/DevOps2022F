@@ -2,7 +2,7 @@ version: "3.9"
 
 networks: 
   main:
-    name: minitwat
+    name: main
 
 
 services:
@@ -11,6 +11,8 @@ services:
     container_name: "elasticsearch"
     environment:
       - discovery.type=single-node
+    ports:
+        - 127.0.0.1:9200:9200  
     volumes:
         - elk_elasticsearch_data:/usr/share/elasticsearch/data
     networks:
