@@ -11,8 +11,6 @@ services:
     container_name: "elasticsearch"
     environment:
       - discovery.type=single-node
-    ports: 
-      - 9200:9200
     volumes:
         - elk_elasticsearch_data:/usr/share/elasticsearch/data
     networks:
@@ -26,7 +24,7 @@ services:
    depends_on:
     - elasticsearch
    environment:
-    elasticsearch.hosts: '["http://elasticsearch:9200"]'
+    elasticsearch.hosts: '["http://elasticsearch"]'
    networks:
     - main
  
@@ -69,4 +67,4 @@ services:
 volumes:
   grafana-storage:
   prome:
-  elk_elasticsearch:
+  elk_elasticsearch_data:
