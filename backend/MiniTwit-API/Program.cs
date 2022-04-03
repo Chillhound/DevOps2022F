@@ -18,12 +18,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Configuration.AddEnvironmentVariables();
 
-var pw = System.Environment.GetEnvironmentVariable("AZURE");
+var connectionString = System.Environment.GetEnvironmentVariable("AZURE");
 Console.WriteLine("HERE IS THE PASSWORD");
-Console.WriteLine(pw);
+Console.WriteLine(connectionString);
 Console.WriteLine("----------");
 
-builder.Services.AddDbContextPool<MiniTwitContext>(options => options.UseSqlServer($"Server=tcp:devops-server-2022.database.windows.net,1433;Initial Catalog=devopsDB;Persist Security Info=False;User ID=admin-22;Password=Havetraktor1433!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
+builder.Services.AddDbContextPool<MiniTwitContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
