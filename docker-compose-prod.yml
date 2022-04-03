@@ -10,12 +10,16 @@ services:
     container_name: "elasticsearch"
     environment:
       - discovery.type=single-node
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - xpack.security.enabled=$ELASTIC_SECURITY
     ports:
         - 9200:9200  
     volumes:
         - elk_elasticsearch_data:/usr/share/elasticsearch/data
     networks:
       - main
+    env_file:
+      - ./var.env   
 
   kibana:
    container_name: kibana
@@ -26,8 +30,12 @@ services:
     - elasticsearch
    environment:
     elasticsearch.hosts: '["http://192.168.32.4:9200"]'
+    ELASTICSEARCH_USERNAME: elastic
+    ELASTICSEARCH_PASSWORD: $ELASTIC_PASSWORD
    networks:
     - main
+   env_file:
+      - ./var.env  
  
   api:
     container_name: "api"
