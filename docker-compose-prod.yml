@@ -68,7 +68,7 @@ services:
       - main
 
   testmanden:
-    container_name: "jacobs test"
+    container_name: "jacobtest"
     image: axrez/devops-frontend
     ports:
       - 9999:9999        
