@@ -33,10 +33,10 @@ services:
     container_name: "api"
     image: axrez/devops-backend
     restart: on-failure
-    environment:
-     -  AZURE: "${AZURE}"
     ports:
       - 8080:80
+    env_file:
+      - ./var.env  
 
   frontend:
     container_name: "frontend"
