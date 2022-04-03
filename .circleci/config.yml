@@ -47,7 +47,7 @@ jobs:
           echo "disregard ssh known_hosts warnings"
           echo "UserKnownHostsFile=/dev/null" > ~/.ssh/config
           echo "StrictHostKeyChecking=no">> ~/.ssh/config
-      - run: ssh root@157.245.27.14 -i ~/.ssh/id_rsa_af263f56e781251989724178cd4b83e8 "docker pull axrez/devops-backend && docker pull axrez/devops-frontend && docker-compose -f docker-compose-prod.yml up -d"
+      - run: ssh root@157.245.27.14 -i ~/.ssh/id_rsa_af263f56e781251989724178cd4b83e8 "curl https://raw.githubusercontent.com/Chillhound/DevOps2022F/main/docker-compose-prod.yml -o docker-compose-prod.yml && docker pull axrez/devops-backend && docker pull axrez/devops-frontend && docker-compose -f docker-compose-prod.yml up -d"
 
 orbs:
   sonarcloud: sonarsource/sonarcloud@1.0.3
