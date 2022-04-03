@@ -18,7 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Configuration.AddEnvironmentVariables();
 
-var pw = System.Environment.GetEnvironmentVariable("PW");
+var pw = System.Environment.GetEnvironmentVariable("AZURE");
 Console.WriteLine("HERE IS THE PASSWORD");
 Console.WriteLine(pw);
 Console.WriteLine("----------");
