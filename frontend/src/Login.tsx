@@ -36,7 +36,7 @@ const Login: React.FC = () => {
         })
         .then((token) => {
           tokenRef.current = token;
-          fetch(`${baseUrlNoPort}/User/Me`, {
+          fetch(`${baseUrl}/User/Me`, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
