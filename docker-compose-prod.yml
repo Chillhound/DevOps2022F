@@ -1,7 +1,5 @@
 version: "3.9"
 
-#docker-compose has been updated by the CI pipeline :) - nu med opdatering
-
 networks: 
   main:
     name: main
@@ -27,7 +25,7 @@ services:
    depends_on:
     - elasticsearch
    environment:
-    elasticsearch.hosts: '["http://elasticsearch"]'
+    elasticsearch.hosts: '["http://192.168.32.4:9200"]'
    networks:
     - main
  
@@ -66,12 +64,6 @@ services:
       - "9090:9090"
     networks:
       - main
-
-  testmanden:
-    container_name: "jacobtest"
-    image: axrez/devops-frontend
-    ports:
-      - 9999:9999        
 
 volumes:
   grafana-storage:
