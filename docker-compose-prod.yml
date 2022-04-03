@@ -1,9 +1,10 @@
 version: "3.9"
 
+#docker-compose has been updated by the CI pipeline :)
+
 networks: 
   main:
     name: main
-
 
 services:
   elasticsearch:
