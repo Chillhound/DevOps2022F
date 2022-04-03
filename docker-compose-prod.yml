@@ -11,7 +11,7 @@ services:
     environment:
       - discovery.type=single-node
     ports:
-        - 127.0.0.1:9200:9200  
+        - 9200:9200  
     volumes:
         - elk_elasticsearch_data:/usr/share/elasticsearch/data
     networks:
