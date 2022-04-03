@@ -34,7 +34,7 @@ services:
     image: axrez/devops-backend
     restart: on-failure
     environment:
-     -  AZURE: ${AZURE}
+     -  AZURE: "${AZURE}"
     ports:
       - 8080:80
 
