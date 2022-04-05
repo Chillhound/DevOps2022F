@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Prometheus;
+using Serilog;
+using Serilog.Formatting.Elasticsearch;
+using Serilog.Sinks.Elasticsearch;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +18,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Configuration.AddEnvironmentVariables();
 
-builder.Services.AddDbContextPool<MiniTwitContext>(options => options.UseSqlServer("Server=tcp:devops-server-2022.database.windows.net,1433;Initial Catalog=devopsDB;Persist Security Info=False;User ID=admin-22;Password=Havetraktor1433!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
+var connectionString = System.Environment.GetEnvironmentVariable("AZURE");
+Console.WriteLine("HERE IS THE PASSWORD");
+Console.WriteLine(connectionString);
+Console.WriteLine("----------");
+
+builder.Services.AddDbContextPool<MiniTwitContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -37,6 +45,19 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     })
 );
+
+
+// Setup serrlog and set the sink to elasticSearch 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://157.245.27.14:9200")){
+             AutoRegisterTemplate = true,
+             AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
+             CustomFormatter = new ElasticsearchJsonFormatter()
+             
+    }).CreateLogger();
+
+builder.Host.UseSerilog(Log.Logger);
 
 var app = builder.Build();
 
