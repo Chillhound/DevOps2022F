@@ -1,24 +1,25 @@
 version: "3.9"
 
-#der skal laves volume til grafana
-
 networks: 
   main:
     name: main
 
 services:
- 
   elasticsearch:
     image: "docker.elastic.co/elasticsearch/elasticsearch:7.2.0"
     container_name: "elasticsearch"
     environment:
-      - discovery.type=single-node
-    ports: 
-      - 9200:9200
-    volumes: 
-      - elk_elasticsearch_data:/usr/share/elasticsearch/data  
+      discovery.type: single-node
+      ELASTIC_PASSWORD: $ELASTIC_PASSWORD
+      xpack.security.enabled: true
+    ports:
+        - 9200:9200  
+    volumes:
+        - elk_elasticsearch_data:/usr/share/elasticsearch/data
     networks:
       - main
+    env_file:
+      - ./var.env   
 
   kibana:
    container_name: kibana
@@ -28,30 +29,28 @@ services:
    depends_on:
     - elasticsearch
    environment:
-    elasticsearch.hosts: '["http://elasticsearch:9200"]'
+    elasticsearch.hosts: '["http://localhost:9200"]'
+    ELASTICSEARCH_USERNAME: elastic
+    ELASTICSEARCH_PASSWORD: $ELASTIC_PASSWORD
    networks:
     - main
-        
+   env_file:
+      - ./var.env  
+ 
   api:
     container_name: "api"
-    build:
-      context: .
-      dockerfile: ./Dockerfile.api
-    depends_on:
-      - elasticsearch
+    image: axrez/devops-backend
+    restart: on-failure
     ports:
       - 8080:80
-    networks:
-      - main
+    env_file:
+      - ./var.env  
 
   frontend:
     container_name: "frontend"
-    build:
-      context: frontend
+    image: axrez/devops-frontend
     ports:
-      - 3001:80
-    networks:
-      - main
+      - 80:80
 
   grafana:
    image: grafana/grafana:latest
@@ -66,16 +65,15 @@ services:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - prom:/prometheus
+      - prome:/prometheus
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    #command: --web.enable-lifecycle  --config.file=prometheus.yml  
     ports:
       - "9090:9090"
     networks:
-      - main    
-
+      - main
 
 volumes:
   grafana-storage:
-  prom: 
+  prome:
   elk_elasticsearch_data:
-
