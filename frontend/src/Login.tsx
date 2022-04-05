@@ -1,7 +1,7 @@
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { baseUrl, baseUrlNoPort } from "./utils/config";
+import { baseUrl } from "./utils/config";
 import flashContext from "./utils/flashContext";
 import userContext from "./utils/userContext";
 
