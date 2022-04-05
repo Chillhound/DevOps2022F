@@ -83,13 +83,13 @@ app.UseRouting();
 app.UseHttpMetrics();
 app.UseMetricServer();
 
-app.UseEndpoints(endpoints =>
-    endpoints.MapMetrics()
-);
-
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+    endpoints.MapMetrics()
+);
 
 app.MapControllers();
 
