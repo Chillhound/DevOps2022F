@@ -21,12 +21,6 @@ builder.Configuration.AddEnvironmentVariables();
 
 var elastic = System.Environment.GetEnvironmentVariable("ELASTIC_PASSWORD");
 var connectionString = System.Environment.GetEnvironmentVariable("AZURE");
-Console.WriteLine("HERE IS THE PASSWORD");
-Console.WriteLine(connectionString);
-Console.WriteLine("----------");
-Console.WriteLine("HERE IS ELASTIC PW");
-Console.WriteLine("----------");
-Console.WriteLine(elastic);
 
 builder.Services.AddDbContextPool<MiniTwitContext>(options => options.UseSqlServer(connectionString));
 
