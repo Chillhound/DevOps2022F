@@ -21,6 +21,8 @@ builder.Configuration.AddEnvironmentVariables();
 
 var elastic = System.Environment.GetEnvironmentVariable("ELASTIC_PASSWORD");
 var connectionString = System.Environment.GetEnvironmentVariable("AZURE");
+Console.WriteLine("ELASTIC PW"+elastic);
+
 
 builder.Services.AddDbContextPool<MiniTwitContext>(options => options.UseSqlServer(connectionString));
 
@@ -46,15 +48,15 @@ builder.Services.AddCors(options =>
 );
 
 
-Serilog.Debugging.SelfLog.Enable(msg => Debug.WriteLine(msg));
+Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine(msg));
 // Setup serrlog and set the sink to elasticSearch 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://192.168.32.4:9200")){
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://elastic:DevOpsBenis1433@157.245.27.14:9200/")){
              AutoRegisterTemplate = true,
              AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
              CustomFormatter = new ElasticsearchJsonFormatter(),
-             ModifyConnectionSettings = x => x.BasicAuthentication("elastic", elastic),
+             //ModifyConnectionSettings = x => x.BasicAuthentication("elastic", elastic),
              
     }).CreateLogger();
 
