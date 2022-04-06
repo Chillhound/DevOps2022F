@@ -50,7 +50,7 @@ Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine(msg));
 // Setup serrlog and set the sink to elasticSearch 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://elastic:" + password + "@157.245.27.14:9200/")){
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://elastic:" + elastic + "@157.245.27.14:9200/")){
              AutoRegisterTemplate = true,
              AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
              CustomFormatter = new ElasticsearchJsonFormatter(),
