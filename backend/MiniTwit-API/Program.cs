@@ -7,6 +7,7 @@ using Serilog;
 using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
 using System.Text;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +19,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Configuration.AddEnvironmentVariables();
 
+var elastic = System.Environment.GetEnvironmentVariable("ELASTIC_PASSWORD");
 var connectionString = System.Environment.GetEnvironmentVariable("AZURE");
 Console.WriteLine("HERE IS THE PASSWORD");
 Console.WriteLine(connectionString);
 Console.WriteLine("----------");
+Console.WriteLine("HERE IS ELASTIC PW");
+Console.WriteLine("----------");
+Console.WriteLine(elastic);
 
-builder.Services.AddDbContextPool<MiniTwitContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContextPool<MiniTwitContext>(options => options.UseSqlite("Filename=:memory:"));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -47,15 +52,19 @@ builder.Services.AddCors(options =>
 );
 
 
+Serilog.Debugging.SelfLog.Enable(msg => Debug.WriteLine(msg));
 // Setup serrlog and set the sink to elasticSearch 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://157.245.27.14:9200")){
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://192.168.32.4:9200")){
              AutoRegisterTemplate = true,
              AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
-             CustomFormatter = new ElasticsearchJsonFormatter()
+             CustomFormatter = new ElasticsearchJsonFormatter(),
+             ModifyConnectionSettings = x => x.BasicAuthentication("elastic", elastic),
              
     }).CreateLogger();
+
+
 
 builder.Host.UseSerilog(Log.Logger);
 
