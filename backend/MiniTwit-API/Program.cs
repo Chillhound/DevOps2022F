@@ -28,7 +28,7 @@ Console.WriteLine("HERE IS ELASTIC PW");
 Console.WriteLine("----------");
 Console.WriteLine(elastic);
 
-builder.Services.AddDbContextPool<MiniTwitContext>(options => options.UseSqlite("Filename=:memory:"));
+builder.Services.AddDbContextPool<MiniTwitContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
