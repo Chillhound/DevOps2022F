@@ -57,7 +57,7 @@ namespace MiniTwit_Public_API.Controllers
         [Route("msgs/{username}")]
         public async Task<ActionResult<ICollection<Message>>> GetMessagesUser(string username)
         {
-            Log.Logger.Information($"messages request for the user {username}");
+            Log.Logger.Debug($"messages request for the user {username}");
             int tmp; 
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
             if(hasLatest)
@@ -70,7 +70,7 @@ namespace MiniTwit_Public_API.Controllers
            
             if (user == null)
             {
-                Log.Logger.Information($"The User couldnt be Retrived from DB");
+                Log.Logger.Error($"The User couldnt be Retrived from DB");
                 return BadRequest();
             }
             Log.Logger.Information($"Retrived the user {user.UserName} from DB");
@@ -82,7 +82,7 @@ namespace MiniTwit_Public_API.Controllers
         [Route("msgs/{username}")]
         public async Task<IActionResult> PostMessages(string username)
         {
-            Log.Logger.Information($"Post messages request reviced from user {username}");
+            Log.Logger.Debug($"Post messages request reviced from user {username}");
             var data = await Request.ReadFromJsonAsync<apiDTO>();
             //Har taget udgangspunkt i at Helge IKKE validerer brugeren
 
@@ -119,7 +119,7 @@ namespace MiniTwit_Public_API.Controllers
         { 
             int tmp; 
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
-            Log.Logger.Information($"Create user request with username: {userDTO.username} ");
+            Log.Logger.Debug($"Create user request with username: {userDTO.username} ");
             if (hasLatest)
             {
                 RequestLatest.IncTo(tmp);
@@ -132,7 +132,7 @@ namespace MiniTwit_Public_API.Controllers
             var alreadyExists = await _context.Users.Where(u => u.UserName == userDTO.username).FirstOrDefaultAsync();
             if (alreadyExists != null)
             {
-                Log.Logger.Information($"The user alreadyexist in the db with: {userDTO.username} for the createuser request ");
+                Log.Logger.Error($"The user alreadyexist in the db with: {userDTO.username} for the createuser request ");
                 return BadRequest();
             }
 
@@ -169,7 +169,7 @@ namespace MiniTwit_Public_API.Controllers
             var user = await _context.Users.Include(u => u.Following).Where(u => u.UserName == username).Select(u => u).FirstOrDefaultAsync();
             if (user == null)
             {
-                Log.Logger.Information($"The user with {username} was not found in db");
+                Log.Logger.Debug($"The user with {username} was not found in db");
                 return NotFound();
             }
             var following = await _context.Followers.Include(f => f.Whom).Where(f => f.WhoId == user.UserId).Select(f => f.Whom.UserName).ToListAsync();
@@ -182,7 +182,7 @@ namespace MiniTwit_Public_API.Controllers
         [Route("fllws/{username}")]
         public async Task<IActionResult> ToggleFollowUser(string username)
         {
-            Log.Logger.Information($"Recived a follow request with username {username}");
+            Log.Logger.Debug($"Recived a follow request with username {username}");
             int tmp = 0; 
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
             if(hasLatest)
@@ -195,7 +195,7 @@ namespace MiniTwit_Public_API.Controllers
            
             if(requestingUser == null)
             {
-                Log.Logger.Information($"The requesting user for the follow request was not found ");
+                Log.Logger.Error($"The requesting user for the follow request was not found ");
                 return NotFound();
             }
             Log.Logger.Information($"The requesting user for the follow request was retrived from db with username: {requestingUser.UserName}");
@@ -208,7 +208,7 @@ namespace MiniTwit_Public_API.Controllers
                 var userToBeUnfollowed = await _context.Users.Where(u => u.UserName == unfollowName).FirstOrDefaultAsync();
                 if (userToBeUnfollowed == null) 
                 {
-                    Log.Logger.Information($"The user to be unfollowed was not found in the db {unfollowName}");
+                    Log.Logger.Error($"The user to be unfollowed was not found in the db {unfollowName}");
                     return NotFound();
                 }
 
@@ -229,7 +229,7 @@ namespace MiniTwit_Public_API.Controllers
             {
                 
                 var followName = data.follow;
-                Log.Logger.Information($"The follow request is a follow request to user: {followName}");
+                Log.Logger.Debug($"The follow request is a follow request to user: {followName}");
                 var userToBeFollowed = await _context.Users.Include(u => u.Followers).Where(u => u.UserName == followName).FirstOrDefaultAsync();
                 if (userToBeFollowed == null) 
                 {
@@ -241,7 +241,7 @@ namespace MiniTwit_Public_API.Controllers
 
                 if (exists) 
                 {
-                    Log.Logger.Information($"the follow relationship allready exists");
+                    Log.Logger.Error($"the follow relationship allready exists");
                     return NoContent();
                 }
 
