@@ -21,7 +21,7 @@ namespace MiniTwit_API.Controllers
         {
 
             List<PublicMessageDTO> result = new List<PublicMessageDTO>();
-            List<Message> messages = context.Messages.Take(limit).ToList();
+            List<Message> messages = context.Messages.OrderByDescending(x => x.MessageId).Take(limit).ToList();
 
             foreach (Message message in messages)
             {

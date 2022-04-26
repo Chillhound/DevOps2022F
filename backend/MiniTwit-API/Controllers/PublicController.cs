@@ -29,7 +29,7 @@ namespace MiniTwit_Public_API.Controllers
             }
             var limit = 100;
 
-            var messages = await _context.Messages.Where(m => m.Flagged == 0).Select(m => new { content = m.Text, pub_date = m.PubDate, user = m.User.UserName }).Take(limit).ToListAsync();
+            var messages = await _context.Messages.Where(m => m.Flagged == 0).OrderByDescending(x => x.MessageId).Select(m => new { content = m.Text, pub_date = m.PubDate, user = m.User.UserName }).Take(limit).ToListAsync();
             return new JsonResult(messages);
         }
 
@@ -61,7 +61,7 @@ namespace MiniTwit_Public_API.Controllers
                 return BadRequest();
             }
             Log.Logger.Information($"Retrived the user {user.UserName} from DB");
-            var messages = await _context.Messages.Where(m => m.UserId == user.UserId).Where(m => m.Flagged == 0).Select(m => new { content = m.Text, pub_date = m.PubDate, user = m.User.UserName }).ToListAsync();
+            var messages = await _context.Messages.Where(m => m.UserId == user.UserId).Where(m => m.Flagged == 0).OrderByDescending(x => x.MessageId).Select(m => new { content = m.Text, pub_date = m.PubDate, user = m.User.UserName }).ToListAsync();
             return new JsonResult(messages);
         }
 
@@ -239,7 +239,8 @@ namespace MiniTwit_Public_API.Controllers
                     Who = requestingUser,
                     Whom = userToBeFollowed
                 };
-                
+                //requestingUser.Following.Add(newFollowing); //nok unødvendig
+                //userToBeFollowed.Followers.Add(newFollowing); //nok unødvendig
                 await _context.Followers.AddAsync(newFollowing);
                 await _context.SaveChangesAsync();
                 Log.Logger.Information($"The follow relationship has been saved to db");
