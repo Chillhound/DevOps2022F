@@ -1,19 +1,6 @@
-﻿using Domain.DTO;
-using DataAccess;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Models;
-using System.Security.Cryptography;
-using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
-using Prometheus;
+﻿using Prometheus;
 using Serilog;
+using System.Text.Json.Serialization;
 
 namespace MiniTwit_Public_API.Controllers
 {
@@ -34,15 +21,15 @@ namespace MiniTwit_Public_API.Controllers
         [Route("/msgs")]
         public async Task<ActionResult<ICollection<Message>>> GetMessages()
         {
-            int tmp; 
+            int tmp;
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
-            if(hasLatest)
+            if (hasLatest)
             {
                 LatestResult.Latest = tmp;
             }
             var limit = 100;
 
-            var messages = await _context.Messages.Where(m => m.Flagged == 0).OrderByDescending(x => x.PubDate).Select(m => new {content = m.Text, pub_date = m.PubDate, user = m.User.UserName}).Take(limit).ToListAsync();
+            var messages = await _context.Messages.Where(m => m.Flagged == 0).Select(m => new { content = m.Text, pub_date = m.PubDate, user = m.User.UserName }).Take(limit).ToListAsync();
             return new JsonResult(messages);
         }
 
@@ -50,7 +37,7 @@ namespace MiniTwit_Public_API.Controllers
         [Route("/latest")]
         public ActionResult GetLatest()
         {
-            return Ok(new {latest = LatestResult.Latest});
+            return Ok(new { latest = LatestResult.Latest });
         }
 
         [HttpGet]
@@ -58,24 +45,24 @@ namespace MiniTwit_Public_API.Controllers
         public async Task<ActionResult<ICollection<Message>>> GetMessagesUser(string username)
         {
             Log.Logger.Debug($"messages request for the user {username}");
-            int tmp; 
+            int tmp;
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
-            if(hasLatest)
+            if (hasLatest)
             {
                 RequestLatest.IncTo(tmp);
                 LatestResult.Latest = tmp;
             }
             var user = await _context.Users.Where(u => u.UserName == username).Select(u => u).FirstOrDefaultAsync();
 
-           
+
             if (user == null)
             {
                 Log.Logger.Error($"The User couldnt be Retrived from DB");
                 return BadRequest();
             }
             Log.Logger.Information($"Retrived the user {user.UserName} from DB");
-            var messages = await _context.Messages.Where(m => m.UserId == user.UserId).Where(m => m.Flagged == 0).OrderByDescending(x => x.PubDate).Select(m => new {content = m.Text,pub_date = m.PubDate, user = m.User.UserName}).ToListAsync();
-            return new JsonResult(messages); 
+            var messages = await _context.Messages.Where(m => m.UserId == user.UserId).Where(m => m.Flagged == 0).Select(m => new { content = m.Text, pub_date = m.PubDate, user = m.User.UserName }).ToListAsync();
+            return new JsonResult(messages);
         }
 
         [HttpPost]
@@ -86,9 +73,9 @@ namespace MiniTwit_Public_API.Controllers
             var data = await Request.ReadFromJsonAsync<apiDTO>();
             //Har taget udgangspunkt i at Helge IKKE validerer brugeren
 
-            int tmp; 
+            int tmp;
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
-            if(hasLatest)
+            if (hasLatest)
             {
                 RequestLatest.IncTo(tmp);
                 LatestResult.Latest = tmp;
@@ -105,7 +92,7 @@ namespace MiniTwit_Public_API.Controllers
                 Text = data.content,
                 PubDate = DateTime.UtcNow,
                 Flagged = 0
-            }; 
+            };
             await _context.Messages.AddAsync(message);
             await _context.SaveChangesAsync();
             Log.Logger.Information($"The message from {user.UserName} has been saved to db");
@@ -116,8 +103,8 @@ namespace MiniTwit_Public_API.Controllers
         [Route("/register")]
         [Produces("application/json")] //tror ikke det er nødvendigt.. 
         public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO userDTO)
-        { 
-            int tmp; 
+        {
+            int tmp;
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
             Log.Logger.Debug($"Create user request with username: {userDTO.username} ");
             if (hasLatest)
@@ -156,11 +143,11 @@ namespace MiniTwit_Public_API.Controllers
         [Route("fllws/{username}")]
         public async Task<IActionResult> FollowUser(string username, int no = 100)
         {
-           
+
             //skal der ses på at bruge no til noget, så mængden der returneres kan justeres?
-            int tmp; 
+            int tmp;
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
-            if(hasLatest)
+            if (hasLatest)
             {
                 RequestLatest.IncTo(tmp);
                 LatestResult.Latest = tmp;
@@ -174,26 +161,26 @@ namespace MiniTwit_Public_API.Controllers
             }
             var following = await _context.Followers.Include(f => f.Whom).Where(f => f.WhoId == user.UserId).Select(f => f.Whom.UserName).ToListAsync();
             Log.Logger.Information($"Retrvied follows and returning list of follows");
-            return Ok(new {follows = following});
+            return Ok(new { follows = following });
         }
 
-        
+
         [HttpPost]
         [Route("fllws/{username}")]
         public async Task<IActionResult> ToggleFollowUser(string username)
         {
             Log.Logger.Debug($"Recived a follow request with username {username}");
-            int tmp = 0; 
+            int tmp = 0;
             var hasLatest = int.TryParse(Request.Query["latest"], out tmp);
-            if(hasLatest)
+            if (hasLatest)
             {
                 RequestLatest.IncTo(tmp);
                 LatestResult.Latest = tmp;
             }
 
             var requestingUser = await _context.Users.Include(u => u.Following).Where(u => u.UserName == username).FirstOrDefaultAsync();
-           
-            if(requestingUser == null)
+
+            if (requestingUser == null)
             {
                 Log.Logger.Error($"The requesting user for the follow request was not found ");
                 return NotFound();
@@ -201,12 +188,12 @@ namespace MiniTwit_Public_API.Controllers
             Log.Logger.Information($"The requesting user for the follow request was retrived from db with username: {requestingUser.UserName}");
             var data = await Request.ReadFromJsonAsync<apiDTO>();
 
-            if (data.unfollow != null) 
+            if (data.unfollow != null)
             {
                 Log.Logger.Information($"The follow request is a unfollow request");
                 var unfollowName = data.unfollow;
                 var userToBeUnfollowed = await _context.Users.Where(u => u.UserName == unfollowName).FirstOrDefaultAsync();
-                if (userToBeUnfollowed == null) 
+                if (userToBeUnfollowed == null)
                 {
                     Log.Logger.Error($"The user to be unfollowed was not found in the db {unfollowName}");
                     return NotFound();
@@ -215,11 +202,11 @@ namespace MiniTwit_Public_API.Controllers
                 var following = await _context.Followers.Where(f => f.WhoId == requestingUser.UserId && f.WhomId == userToBeUnfollowed.UserId).FirstOrDefaultAsync();
                 if (following != null)
                 {
-                    
+
                     _context.Followers.Remove(following);
                     await _context.SaveChangesAsync();
                     Log.Logger.Information($"The follow relationship between {requestingUser.UserId} And {userToBeUnfollowed.UserId} has been removed");
-                } 
+                }
                 else
                 {
                     Log.Logger.Information($"The follow relationship couldnt be found in db with {requestingUser.UserId} And {userToBeUnfollowed.UserId}");
@@ -227,11 +214,11 @@ namespace MiniTwit_Public_API.Controllers
             }
             else
             {
-                
+
                 var followName = data.follow;
                 Log.Logger.Debug($"The follow request is a follow request to user: {followName}");
                 var userToBeFollowed = await _context.Users.Include(u => u.Followers).Where(u => u.UserName == followName).FirstOrDefaultAsync();
-                if (userToBeFollowed == null) 
+                if (userToBeFollowed == null)
                 {
                     Log.Logger.Information($"The user to be followed was Not found in the db");
                     return NotFound();
@@ -239,7 +226,7 @@ namespace MiniTwit_Public_API.Controllers
                 Log.Logger.Information($"The user to be followed was found in db with the username {followName}");
                 var exists = await _context.Followers.AnyAsync(e => e.WhoId == requestingUser.UserId && e.WhomId == userToBeFollowed.UserId);
 
-                if (exists) 
+                if (exists)
                 {
                     Log.Logger.Error($"the follow relationship allready exists");
                     return NoContent();
@@ -252,10 +239,9 @@ namespace MiniTwit_Public_API.Controllers
                     Who = requestingUser,
                     Whom = userToBeFollowed
                 };
-                //requestingUser.Following.Add(newFollowing); //nok unødvendig
-                //userToBeFollowed.Followers.Add(newFollowing); //nok unødvendig
+                
                 await _context.Followers.AddAsync(newFollowing);
-                await _context.SaveChangesAsync ();
+                await _context.SaveChangesAsync();
                 Log.Logger.Information($"The follow relationship has been saved to db");
             }
 
@@ -278,13 +264,13 @@ namespace MiniTwit_Public_API.Controllers
         private class apiDTO
         {
             [JsonPropertyName("content")]
-            public string content {get; set;}
+            public string content { get; set; }
 
             [JsonPropertyName("follow")]
-            public string follow {get; set;}
+            public string follow { get; set; }
 
             [JsonPropertyName("unfollow")]
-            public string unfollow {get; set;}
+            public string unfollow { get; set; }
         }
     }
 }
