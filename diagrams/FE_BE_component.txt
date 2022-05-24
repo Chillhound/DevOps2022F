@@ -1,0 +1,17 @@
+@startuml
+
+title MiniTwit components
+
+Component "MiniTwit backend" {
+  [MiniTwit API] as MA
+  [Simulator API] as SA
+}
+
+Component "MiniTwit frontend" {
+  [MiniTwit website] as W
+}
+
+MA - W : HTTP
+
+
+@enduml

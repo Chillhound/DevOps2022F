@@ -1,0 +1,14 @@
+@startuml
+
+title MiniTwit backend package overview
+
+Package "DataAccess"
+Package "Domain"
+Package "MiniTwitAPI"
+
+MiniTwitAPI ..> DataAccess
+DataAccess ..> Domain
+MiniTwitAPI ..> Domain
+
+
+@enduml

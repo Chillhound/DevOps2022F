@@ -1,0 +1,29 @@
+@startuml
+'!pragma horizontalLineBetweenDifferentPackageAllowed
+
+title MiniTwit components
+left to right direction
+frame "Internal Docker network" {
+  Component "MiniTwit frontend" << Docker container >> {
+    [MiniTwit website] as W
+  }
+  
+  Component "MiniTwit backend" << Docker container >> {
+    top to bottom direction
+    [Simulator API] as SA
+    [MiniTwit API] as MA
+  }
+  
+  left to right direction
+  [ElasticSearch] << Docker container >> as E
+  [Kibana] << Docker container >> as K
+  [Grafana] << Docker container >> as G
+  [Prometheus] << Docker container >> as P
+  
+  MA -- W : HTTP
+  E -- K 
+  P -- G  
+  E -- SA
+  P -- SA
+}
+@enduml
