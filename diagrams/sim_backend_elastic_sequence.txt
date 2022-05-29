@@ -1,0 +1,17 @@
+@startuml
+Simulator --> Backend : POST /public/msgs/{username} 
+Backend --> ElasticSearch: Log.Debug(Post messages request received from user {username})
+Backend --> DB : Find user with {username}
+Backend <-- DB : User with {username} has been found
+Backend --> ElasticSearch: Log.Information(Retrieved the user {userName} from DB)
+Backend --> DB: Save the message
+Backend <-- DB: The message has been saved
+Backend --> ElasticSearch: Log.Information(The message from {userName} has been saved to db")
+'ElasticSearch -> Kibana:
+'Kibana -> ElasticSearch: Done
+'Backend <- ElasticSearch: Done
+Simulator <-- Backend: 204 No content
+
+'Er det overhovedet sådan det fungerer?
+
+@enduml

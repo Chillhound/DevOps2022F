@@ -1,0 +1,5 @@
+@startuml
+Frontend --> Backend: POST /message \n - messageText
+Backend --> Backend: Save messageText \n in database
+Frontend <-- Backend: 200 OK \n - messageText
+@enduml
