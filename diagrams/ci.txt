@@ -1,0 +1,45 @@
+@startuml
+
+'uncomment for straight lines
+'skinparam linetype ortho
+
+storage {
+  
+  rectangle "<size:70><&people> \n <size:15>developers" as dev  {
+  }
+  
+  collections "Development Machines" as dm
+  
+  rectangle GitHub as gh {
+    Package frontend {
+      }
+    Package backend {
+      }
+  }
+  rectangle Dockerhub as dh {
+    Component "axrez/devops-frontend" << Docker image >>
+    Component "axrez/devops-backend" << Docker image >>
+  }
+  rectangle CircleCI as ci {
+      Artifact config.yml
+  }
+  rectangle "Remote Server @ DigitalOcean" as di {
+    Component ElasticSearch << Docker container >>
+    Component Kibana << Docker container >>
+    Component Grafana << Docker container >>
+    Component Prometheus << Docker container >>
+    Component Frontend << Docker container >>
+    Component Backend << Docker container >>
+  }
+  
+  dev --> dh : register & configure
+  dev ---> dm : work on
+  dev --> ci : configure
+  dev -> di : configure
+  dm --> gh : pull from / push to
+  gh --> ci : "build on"
+  ci --> dh : push to 
+  dh --> di : deploy via CircleCI
+}
+
+@enduml
