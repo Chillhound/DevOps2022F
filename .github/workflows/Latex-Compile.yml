@@ -1,0 +1,34 @@
+name: Compile Latex
+
+on: 
+  workflow_dispatch:
+  release:
+  
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v2
+      - name: Compile LaTeX document
+        uses: dante-ev/latex-action@latest
+        with:
+          root_file: main.tex
+          working_directory: Report
+          
+      - name: move pdf
+        run: |
+          mkdir build
+          mv main.pdf build/main.pdf
+        working-directory: Report
+
+
+       - name: Publish LaTeX
+         run : |
+          git config --global user.email "rune2690@hotmail.com"
+          git config --global user.name "Chillhound"
+          git add -f $PWD/Report/build/*.pdf
+          git commit -m "WORKFLOW_COMMIT - Update PDFs [skip ci]"
+          git push
+
+      
