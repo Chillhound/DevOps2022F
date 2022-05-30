@@ -1,0 +1,91 @@
+\section{Lessons learned perspective}
+\subsection{Biggest issues, how were they solved and what did we learn }
+% Describe the biggest issues, how you solved them, and which are major lessons learned with regards to: \\
+% - evolution and refactoring\\
+% - operation \\
+% - maintenance \\
+% \textcolor{red}{"Link back to respective commit messages, issues, tickets etc. to illustrate these} \\
+
+% Mulige punkter: \\
+% - angreb på db fra udlandet \\
+% - Stort issue: migrering af db uden tab af data \\
+% - Issue: i et godt stykke tid var vores deployment ikke automatisk på trods af CI pipeline \\
+% - vi har aldrig sat automatiske releases op... \\
+% - Automation er bedre end hacking direkte på server \\
+% - Det tager altid længere tid end man regner med \\
+% - Sørg for at sikre din db \\
+% - Udvikling/konfiguration på win/mac gav lidt problemer fordi løsninger ikke var 1:1 kompatible med linux \\
+% - Nogle ting var vi forud med som f.eks. db abstraction layer, anden db provider samt dockerizing - andre ting var (og er vi stadig) bagud med
+
+%Ideer fra jacob: 
+%- keep it simple - måske kun 1 api??? 
+%- kunne have været fedt at optimere performance som f.eks. håndtering af requests 
+
+The following subsections present some of the biggest issues we've faced during this course, how we solved them and what we learned from it. Common to almost all of them is that they've taught us that taking the time to do things right the first time (or at least when you recognize that something is a problem) is invaluable compared to continue working with incomplete and ineffective workarounds. \\ Some of us have been eager to finish tasks fast and thus not prioritized attention to important details like e.g. handling user secrets or reproducibility. \\
+But having the responsibility for maintenance, refactoring and evolution has given us a new view of the software development process, as you're only hurting your future self when doing things fast and easy. \\
+Prior to this course none of us have tried anything else than rushing to get a project done, handing it in and then not having to deal with it anymore - so this has really been an eye-opener. \\
+
+\subsubsection{Hacking directly on the server}
+For quite some time (indtil commit \url{https://github.com/Chillhound/DevOps2022F/commit/e45526bdfac81a342d1c74413dfd561e0bf05a89} d. 3/4?? måske lidt før) our CI pipeline was not correctly set up resulting in manual labor being necessary when we were to deploy changes. The misconfiguration stemmed from 
+the pipeline not updating the docker-compose file on the droplet and as such we had to manually stop all containers, remove images and then run the docker-compose file. \\
+Doing this manual task is not hard in itself but problems arose when things did not work in the first go. In these scenarios group members would take the path of least resistance and make changes to e.g. the Docker setup directly on the server making it hard to track which changes actually worked and then correctly adding them to version control afterwards. A problem that we faced because of this was one time where we actually lost a working change because we got confused about which changes made where had resulted in the system working correctly. (find lige et konkret eksempel med commit - var det ikke noget med noget db på et tidspunkt? altså da vi skiftede til azure måske? JO DET VAR! den korrekte ændring blev lavet direkte på serveren, men vi committede noget andet til repoet som fuckede det op, mener jeg)
+
+- det er "nemt" nok at gøre men man glemmer hele tiden noget
+- should have fixed it earlier 
+\textcolor{red}{reflekter over hvorfor det er dårlig devops praksis}
+
+\subsubsection{Attacks on database and migrating to cloud}
+As mentioned in a previous section, we used a local Azure SQL Edge database running in a Docker container on our droplet for the first roughly seven weeks (migrated to Azure 15/3, commit \url{https://github.com/Chillhound/DevOps2022F/commit/64df2d7b400a116b25d448e2005b062c0fb2bf72}). With this database we experienced regular attempts to brute-force the password to the superuser of the database, resulting in the Docker container with the database crashing roughly every 6-12 hours. Logs from one of the attempts is seen in appendix 3 "Logs from attempts to access database". \\
+The downtime caused by these crashes led to missing requests from the simulator. It also made us fear losing all of the data, which led to creation of (manual) backups. We did not automate the backup process, as we agreed to move to a hosted database as fast as possible to reduce risk of losing data, especially because we did not think about using Docker volumes from the beginning. 
+\\ \\
+\textbf{Migrating to the cloud} \\
+For the reasons specified above we decided to migrate to a database hosted with Microsoft Azure. \\
+By this time we had become comfortable with creating backups and restoring from them but our research showed that 
+these backups were not directly compatible with the new Azure SQL database making it necessary to use a migration tool (Microsoft Data Migration Assistant \footnote{https://docs.microsoft.com/en-us/sql/dma/dma-overview?view=sql-server-ver16}). \\
+After migrating the data we had some issues with getting connecting the .NET project to new the database and ultimately 
+left the connection string in the repo for \textcolor{red}{???} days. 
+
+
+\subsubsection{Handling secrets}
+For a good part of the project we did not handle secrets correctly (database connection strings), as they were committed to our Github repository. \\
+As described above, we saw that malicious people systematically tried to access our database and thus we assume that there's a real risk of someone scanning public repositories for secrets that can be used to exploit or damage systems. \\
+We learned from another group that they had gotten their data stolen because they did not password protect their database.
+With the somewhat careless way we handled secrets, the same could just as well have happened to us - which again relates to the point about doing things right the first time. \\
+
+
+% \subsubsection{Developing on different OSs}
+% \textcolor{red}{denne er måske lidt tynd, så overvej om den skal blive}
+% - brugte linux i begyndelsen men gik væk fra det \\
+% - konfigurationer der virkede lokalt virkede ikke på droplet f.eks. host.docker.internal \\
+
+% A concrete example of this is the ability to use "host.docker.internal" on Windows and MacOS to ... but which does not exist in Linux.  
+%det var noget værre knep at sætte logging op
+
+\subsubsection{/msgs endpoint becoming very slow}
+Towards the end of the simulator period we discovered that our /msgs endpoint was becoming very slow.
+We identified that the way we had implemented it was ineffective, as we: 
+\begin{enumerate}
+    \item Retrieved all of the posted messages from the database
+    \item Sorted them according to the date they were entered 
+    \item Picked the top 100 of them to show on the site
+\end{enumerate}
+With the amount of posts reaching almost 3 million (2.867.986) near the end, it was understandable that this became slow. \\ 
+If two of us tried to access the endpoint at the same time, the databases compute utilization would increase to around 100\% and make the system unresponsive. \\
+To resolve this issue we opted to create an clustered index on the primary key of the Messages table, which drastically improved the speed of retrieval.
+
+
+
+\subsection{DevOps style of work}
+% Also reflect and describe what was the "DevOps" style of your work. For example, what did you do differently to previous development projects and how did it work? \\
+\textcolor{red}{Der skal nok læses lidt på hvad søren dette præcist betyder :D}
+Der er noget om "three ways" fra devops handbook, link i discord 
+First way = systems thinking \\
+Second way = amplify feedback loops \\
+third way = culture of continual experimentation and learning \\
+Men måske det egentlig ikke kun handler om det? jeg antog det bare lidt \\
+Det giver nok også mening at se lidt i slides fra lektion 5
+
+
+The previous section briefly touched on how this project has been different to our previous experiences. \textcolor{red}{ well, så skal det måske kun stå et sted?} \\
+
+Given the organization and size of our team and the way we have worked together, we definitely had a culture of continual experimentation and learning. Kan vi godt claime det? 
