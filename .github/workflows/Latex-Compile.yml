@@ -1,9 +1,5 @@
 name: Compile Latex
-
-on: 
-  workflow_dispatch:
-  release:
-  
+on: [push]
 jobs:
   build_latex:
     runs-on: ubuntu-latest
