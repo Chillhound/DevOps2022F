@@ -11,23 +11,7 @@ Our Database is a Managed Azure SQL database hosted on Azure. Originally we had 
 
 
 \subsection{Architecture}
-% \textcolor{red}{der er nogle af rapportudsnittene i helges slides som har skrevet at de bruger 4+1 men udelader logical og use case view, hvilket kunne være nice at gøre men det er nok lidt suspekt hvis vi gør det samme - 
-% tror derfor at 3+1 er federe at bruge} \\
-% \textcolor{blue}{overvej at opdele afsnittet i 3+1 eller 4+1, whatever vi mangler}
-
-% This section aims to describe the architecture of our system, using the 3+1 model (KILDE!!!). \\
-
-% The following deployment diagram illustrates the systems ?? view. 
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width = \textwidth]{images/deployment.png}
-%     \caption{Deployment diagram illustrating the ?? view of our MiniTwit system}
-%     \label{fig:DeploymentDiagram}
-% \end{figure} \\
-% As seen in figure 1, the system consists of a managed database on Microsoft's Azure platform as well as two separate droplets on DigitalOcean. The two droplets constitute our scaling setup which is described in depth in a future section. \\ The minitwit-secondary droplet runs the exact same images for frontend and backend.
-% The most interesting parts to examine more deeply (from an architectural perspective) is the Docker containers for frontend and backend, as we wrote the code for those parts whereas the remaining 4 Docker containers (on the minitwit droplet) are just third party dependencies. \\
-% Components??!?!?! 
-This sections aims to describe the architecture of our system using Christensens 3+1 model \cite{architecturemodel} by showing
+This sections aims to describe the architecture of our system using Christensens 3+1 model \cite{architecturemodel} by showing:
 \begin{itemize}
     \item Requirements
     \item Module viewpoint 
@@ -46,22 +30,19 @@ report will use the terms functional and non-functional requirements respectivel
 \noindent
 \textbf{Functional requirements}
 \begin{enumerate}
-    \item The system expose an API which adheres to the requirements of \cite{apispec} 
-    \item Something about minitwit website?
+    \item The system must provide the same functionality as the original MiniTwit system given at the introduction of the course
+    \item The system must expose an API which adheres to the requirements of \cite{apispec} 
 \end{enumerate} 
 
 \noindent
 \textbf{Non-functional requirements}
 \begin{enumerate}
-    \item C\# 
-    \item React with Typescript 
-    \item digitalocean
-    \item docker
-    \item performance, scalability, reliability
+    \item The systems backend must be written in C\# 
+    \item The systems frontend must be written in React with Typescript
+    \item The system must be containerized with Docker
+    \item The system must be deployed on DigitalOcean
+    \item The system must be performant, scalabile and reliable
 \end{enumerate}
-
-
-    
     
 \subsubsection{Module viewpoint}
 Ting der skal være her ifølge 3+1 modellen: \\
@@ -90,15 +71,13 @@ No class diagrams will be shown, as this would not add anything interesting to t
 \begin{figure}[H]
  \centering
  \includegraphics[width = 0.5\textwidth]{images/backend\_complete\_package.png}
- \caption{Package diagram showing our backend artifacts}
+ \caption{Package diagram showing our backend artifacts, dependencies omitted for clarity}
  \label{fig:BackendCompletePackageDiagram}
 \end{figure}
-\textcolor{red}{skal dette diagram vise dependencies?}
-\textcolor{red}{skal man gå dybere i det her lort?} \\
 
 \newpage
 The other interesting part of the program is the frontend, of which a package diagram is shown below.
-Only the "src" package contains files of interest i.e. that we've written and not configuration or template files and as such the contents of "public", "nginx" and the root folder is not shown in the diagram. The artifacts represent the individual pages of the website as well as subcomponents, media, stylesheets and configuration-files that are React-specific. The naming of the pages reflects the naming from the original page structure provided.
+Only the "src" package contains files of interest i.e. that we have written and not configuration or template files and as such the contents of "public", "nginx" and the root folder is not shown in the diagram. The artifacts represent the individual pages of the website as well as subcomponents, media, stylesheets and configuration-files that are React-specific. The naming of the pages reflects the naming from the original page structure provided.
 
 \begin{figure}[H]
  \centering
@@ -118,7 +97,7 @@ Jeg er ikke sikker på at diagrammet passer 100\% ind her eller at jeg forstår 
 Hvad skal vi skrive til diagrammet? \\
 
 
-The following diagram shows the six components i.e. Docker containers of our primary DigitalOcean droplet and how they interact with each other at runtime. The "MiniTwit backend" component contains two separate API subcomponents. The Docker container uses the same port to handle both API requests from the simulator and from the website but we've chosen to show it as two components in the diagram to enforce that they serve two different purposes.
+The following diagram shows the six components i.e. Docker containers of our primary DigitalOcean droplet and how they interact with each other at runtime. The "MiniTwit backend" component contains two separate API subcomponents. The Docker container uses the same port to handle both API requests from the simulator and from the website but we have chosen to show it as two components in the diagram to enforce that they serve two different purposes.
 \begin{figure}[H]
  \centering
  \includegraphics[width = \textwidth]{images/all\_components.png}
@@ -130,14 +109,10 @@ The following diagram shows the six components i.e. Docker containers of our pri
 \subsubsection{Allocation / deployment viewpoint}
 This section illustrates how elements of our system is mapped to infrastructure.
 
-
 \textcolor{red}{Denne sektion mangler tekst} \\
-Physical deployment: \\
-- computers / execution environments \\
-- Deployment units
-- Communication links and dependencies
 
-The following diagram .. 
+As seen in Figure \ref{fig:DeploymentDiagram}, the system consists of a managed database on Microsoft's Azure platform as well as two separate droplets on DigitalOcean. The two droplets constitute our scaling setup which is described in depth in a future section. \\ The minitwit-secondary droplet runs the exact same images for frontend and backend as minitwit.
+% The most interesting parts to examine more deeply (from an architectural perspective) is the Docker containers for frontend and backend, as we wrote the code for those parts whereas the remaining 4 Docker containers (on the minitwit droplet) are just third party dependencies. \\ 
 \begin{figure}[H]
  \centering
  \includegraphics[width = \textwidth]{images/deployment.png}
@@ -148,7 +123,7 @@ The following diagram ..
 \noindent
 Both droplets are hosted on servers located in Frankfurt, Germany and they have the following specs: \\
 \textbf{Primary} \\
-- 1 vCPU
+- 1 vCPU \\
 - 2 GB memory \\
 - 50 GB disc space \\
 
@@ -158,7 +133,7 @@ Both droplets are hosted on servers located in Frankfurt, Germany and they have 
 - 1 GB memory \\
 - 25 GB disc space \\
 
-They don't have the same specifications as they don't handle the same tasks but this will be elaborated in a later section.
+They do not have the same specifications as they do not handle the same tasks but this will be elaborated in a later section.
 
 
 \newpage
@@ -168,29 +143,29 @@ They don't have the same specifications as they don't handle the same tasks but 
 % Skal vi inkludere de ting der blev brugt inden refactor også? \\
 
 \textbf{Docker} is used for containerizing the system \\
-\textbf{Python} is used for the old MiniTwit application. \\
+\textbf{Python} is used in a script for switching floating IP on DigitalOcean  \\
 \textbf{Bash} is used as terminal for the developers. \\
 \textbf{C\# / ASP.NET CORE / dotnet} is used for our backend \\
-\textbf{Ubuntu}, the OS that our droplets run on.\\
-\textbf{React} our JavaScript library for building the website. \\
+\textbf{Ubuntu} the OS that our droplets run on\\
+\textbf{React} our JavaScript library for building the website \\
 \textbf{Nginx} is a web server that runs React\\
 \textbf{Keepalived} high-availability / scaling \\
 \textbf{Docker-compose} handling multiple docker containers \\
 \textbf{Dockerhub} storing docker images \\
-\textbf{Typescript is used for React frontend} \\
+\textbf{Typescript} is used for React frontend \\
 \textbf{Git} version control \\
-\textbf{Github} repository management \\
+\textbf{GitHub} repository management \\
 \textbf{Sonarcloud} static analysis \\
 \textbf{DigitalOcean} provider of infrastructure \\
-\textbf{Vagrant} \\
+\textbf{Vagrant} provisioning of virtual machines \\
 \textbf{CircleCI} continous integration pipeline \\
 \textbf{Serilog} a library used for logging in the backend \\
 \textbf{Prometheus} is used for system monitoring \\
 \textbf{Grafana} is used to display monitoring information \\
 \textbf{ElasticSearch} is used to aggregate the systems logs \\
 \textbf{Kibana} is used to present the aggregated logs \\
-\textbf{Azure SQL Edge} was used in a container in the first weeks of our project. As we wanted a separate permanent place to store the database we moved away from this.\\
-\textbf{Azure SQL Database} is the Database system used for our MiniTwit application.\\
+%\textbf{Azure SQL Edge} initial database \\
+\textbf{Azure SQL Database} is the Database system used for our MiniTwit application\\
 \textbf{Better Code Hub} provides static analysis of the code \\
 \textbf{Microsoft Data Migration Assistant} is a tool that helped us migrate from Azure SQL Edge Database in a Droplet to the Azure SQL Database.\\
 \textbf{SSMPT} is used to configure the mail server.\\
@@ -199,18 +174,18 @@ They don't have the same specifications as they don't handle the same tasks but 
 
 
 \subsection{Important interactions of subsystems}
-The most important interactions of subsystems in our MiniTwit applciation are the following 
+The most important interactions of subsystems in our MiniTwit application are the following 
 \begin{itemize}
     \item HTTP communication between frontend and backend
     \item HTTP communication between backend and the simulator
     \item HTTP communication between backend and Prometheus
-    \item ?? communication between Prometheus and Grafana
+    \item HTTP communication between Prometheus and Grafana
     \item HTTP communication between backend and ElasticSearch
-    \item ?? communication between ElasticSearch and Kibana
+    \item HTTP communication between ElasticSearch and Kibana
 \end{itemize}
 
 The following sequence diagram shows the interaction between frontend and backend when a user posts a new message. \\
-The flow of \textcolor{red}{most? all?} interactions between frontend and backend as well as between the backend and simulator follow the same flow, and as such we won't waste space on showing these. 
+The flow of \textcolor{red}{most? all?} interactions between frontend and backend as well as between the backend and simulator follow the same flow, and as such we will not waste space on showing these. 
 
 \begin{figure}[H]
  \centering
@@ -233,7 +208,7 @@ The next sequence diagram shows an example of an interaction between the simulat
 % \textcolor{red}{Giver nok bedst mening når vi er helt færdige med at arbejde - static analysis osv. kan bruges}
 % \textcolor{red}{The API does not require any authorization. In the first week we implemented..}
 
-In it's current form the system has a public API \\ 
+In its current form the system has a public API \\ 
 
 Results from the static analysis tools X and Y are ... \\ 
 
