@@ -21,10 +21,10 @@ frame "minitwit droplet" {
     [Prometheus] << Docker container >> as P
     
     MA -- W : HTTP
-    E -- K 
-    P -- G  
-    E -- SA
-    P -- SA
+    E -- K : HTTP 
+    P -- G : HTTP
+    E -- SA : HTTP
+    P -- SA : HTTP
   }
 }
 @enduml
