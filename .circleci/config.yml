@@ -66,7 +66,7 @@ workflows:
   compile:
     jobs:
       - latex-orb/compile:
-          file: /Report/main.tex
+          file: Report/main.tex
   build:
     jobs:
       - build-frontend:
