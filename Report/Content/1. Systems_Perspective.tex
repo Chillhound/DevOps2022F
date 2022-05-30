@@ -20,7 +20,7 @@ Our Database is a Managed Azure SQL database hosted on Azure. Originally we had 
 % The following deployment diagram illustrates the systems ?? view. 
 % \begin{figure}[h]
 %     \centering
-%     \includegraphics[width = \textwidth]{Images/deployment.png}
+%     \includegraphics[width = \textwidth]{images/deployment.png}
 %     \caption{Deployment diagram illustrating the ?? view of our MiniTwit system}
 %     \label{fig:DeploymentDiagram}
 % \end{figure} \\
@@ -76,7 +76,7 @@ At the highest level, the system is divided into backend and frontend.\\
 The following package diagram gives a high-level overview of how the backend files are structured.
 \begin{figure}[H]
  \centering
- \includegraphics[width = 0.4\textwidth]{Images/backend\_package\_overview.png}
+ \includegraphics[width = 0.4\textwidth]{images/backend\_package\_overview.png}
  \caption{Backend Package overview}
  \label{fig:BackendPackageDiagram}
 \end{figure}
@@ -89,7 +89,7 @@ A complete package diagram for the backend, including all relevant artifacts i.e
 No class diagrams will be shown, as this would not add anything interesting to the report. \\
 \begin{figure}[H]
  \centering
- \includegraphics[width = 0.5\textwidth]{Images/backend\_complete\_package.png}
+ \includegraphics[width = 0.5\textwidth]{images/backend\_complete\_package.png}
  \caption{Package diagram showing our backend artifacts}
  \label{fig:BackendCompletePackageDiagram}
 \end{figure}
@@ -102,7 +102,7 @@ Only the "src" package contains files of interest i.e. that we've written and no
 
 \begin{figure}[H]
  \centering
- \includegraphics[width = \textwidth]{Images/package\_frontend.png}
+ \includegraphics[width = \textwidth]{images/package\_frontend.png}
  \caption{Package diagram of the frontend folder, only depicting the interesting parts}
  \label{fig:FrontendPackageDiagram}
 \end{figure}
@@ -121,7 +121,7 @@ Hvad skal vi skrive til diagrammet? \\
 The following diagram shows the six components i.e. Docker containers of our primary DigitalOcean droplet and how they interact with each other at runtime. The "MiniTwit backend" component contains two separate API subcomponents. The Docker container uses the same port to handle both API requests from the simulator and from the website but we've chosen to show it as two components in the diagram to enforce that they serve two different purposes.
 \begin{figure}[H]
  \centering
- \includegraphics[width = \textwidth]{Images/all\_components.png}
+ \includegraphics[width = \textwidth]{images/all\_components.png}
  \caption{Component diagram of our primary DigitalOcean droplet}
  \label{fig:CompleteComponentDiagram}
 \end{figure}
@@ -140,7 +140,7 @@ Physical deployment: \\
 The following diagram .. 
 \begin{figure}[H]
  \centering
- \includegraphics[width = \textwidth]{Images/deployment.png}
+ \includegraphics[width = \textwidth]{images/deployment.png}
  \caption{Deployment diagram illustrating the overall deployment view of our MiniTwit system}
  \label{fig:DeploymentDiagram}
 \end{figure}
@@ -214,7 +214,7 @@ The flow of \textcolor{red}{most? all?} interactions between frontend and backen
 
 \begin{figure}[H]
  \centering
- \includegraphics[width = .5 \textwidth]{Images/frontend\_backend\_post\_messages\_sequence.png}
+ \includegraphics[width = .5 \textwidth]{images/frontend\_backend\_post\_messages\_sequence.png}
  \caption{Sequence diagram depicting the interaction between frontend and backend}
  \label{fig:SequenceDiagramPostMessage}
 \end{figure}
@@ -223,7 +223,7 @@ The next sequence diagram shows an example of an interaction between the simulat
 
 \begin{figure}[H]
  \centering
- \includegraphics[width = .9 \textwidth]{Images/sim\_backend\_elastic\_sequence.png}
+ \includegraphics[width = .9 \textwidth]{images/sim\_backend\_elastic\_sequence.png}
  \caption{Sequence diagram depicting the interactions between the simulator, our simulator API, ElasticSearch and database that happen when the simulator posts a new message from a user}
  \label{fig:SequenceDiagramElasticBackendSim}
 \end{figure}

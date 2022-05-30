@@ -1,3 +1,5 @@
+#Based on: https://github.com/dante-ev/docker-texlive
+
 name: Compile Latex
 on: [push]
 jobs:
@@ -10,18 +12,18 @@ jobs:
         uses: dante-ev/latex-action@latest
         with:
           root_file: main.tex
-          working_directory: Report
+          working_directory: report
           
       - name: move pdf
         run: |
           mkdir build
           mv main.pdf build/main.pdf
-        working-directory: Report
+        working-directory: report
         
       - name: Publish LaTeX
         run: |
           git config --global user.email "rune2690@hotmail.com"
           git config --global user.name "Chillhound"
-          git add -f $PWD/Report/build/*.pdf
+          git add -f $PWD/report/build/*.pdf
           git commit -m "WORKFLOW_COMMIT - Update PDFs [skip ci]"
           git push

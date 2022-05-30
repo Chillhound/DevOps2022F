@@ -48,25 +48,14 @@ jobs:
           echo "UserKnownHostsFile=/dev/null" > ~/.ssh/config
           echo "StrictHostKeyChecking=no">> ~/.ssh/config
       - run: ssh root@157.245.27.14 -i ~/.ssh/id_rsa_af263f56e781251989724178cd4b83e8 "curl https://raw.githubusercontent.com/Chillhound/DevOps2022F/main/docker-compose-prod.yml -o docker-compose-prod.yml && docker pull axrez/devops-backend && docker pull axrez/devops-frontend && docker-compose --env-file ./var.env -f docker-compose-prod.yml up -d"
-  Compile-report:
-    docker:
-      - image: koppor/texlive 
-    steps:
-      - checkout
-      - run: latexmk -pdf Report/main.tex
-
+ 
 
 orbs:
   sonarcloud: sonarsource/sonarcloud@1.0.3
-  latex-orb: woltsu/latex-orb@1.0.0
 
 
 workflows:
   version: 2
-  compile:
-    jobs:
-      - latex-orb/compile:
-          file: Report/main.tex
   build:
     jobs:
       - build-frontend:
