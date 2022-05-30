@@ -31,7 +31,7 @@ This sections aims to describe the architecture of our system using Christensens
 \begin{itemize}
     \item Requirements
     \item Module viewpoint 
-    \item Component & connectors viewpoint 
+    \item Component \& connectors viewpoint 
     \item Allocation / deployment viewpoint
 \end{itemize}.
 % Artikel https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.555.5791&rep=rep1&type=pdf 
@@ -48,7 +48,7 @@ report will use the terms functional and non-functional requirements respectivel
 \begin{enumerate}
     \item The system expose an API which adheres to the requirements of \cite{apispec} 
     \item Sumthing about minitwit website?
-\end{enumerate} \\
+\end{enumerate} 
 
 \noindent
 \textbf{Non-functional requirements}
@@ -74,7 +74,6 @@ This section attempts to describe how the functionality of our system is organiz
 At the highest level, the system is divided into backend and frontend.\\
 
 The following package diagram gives a high-level overview of how the backend files are structured.
-\textcolor{red}{dette diagram skal have en "ramme" rundt om?}
 \begin{figure}[H]
  \centering
  \includegraphics[width = 0.4\textwidth]{Images/backend\_package\_overview.png}
@@ -118,7 +117,7 @@ Jeg er ikke sikker på at diagrammet passer 100\% ind her eller at jeg forstår 
 
 Hvad skal vi skrive til diagrammet? \\
 
-\\
+
 The following diagram shows the six components i.e. Docker containers of our primary DigitalOcean droplet and how they interact with each other at runtime. The "MiniTwit backend" component contains two separate API subcomponents. The Docker container uses the same port to handle both API requests from the simulator and from the website but we've chosen to show it as two components in the diagram to enforce that they serve two different purposes.
 \begin{figure}[H]
  \centering
@@ -159,7 +158,7 @@ Both droplets are hosted on servers located in Frankfurt, Germany and they have 
 - 1 GB memory \\
 - 25 GB disc space \\
 
-They don't have the same specifications as they don't handle the same tasks, which will be elaborated in a later section.
+They don't have the same specifications as they don't handle the same tasks but this will be elaborated in a later section.
 
 
 \newpage
