@@ -1,0 +1,43 @@
+@startuml
+left to right direction
+
+Package Frontend {
+  Package nginx {
+  }
+  
+  Package Public {
+  }
+  
+  
+  Package src {
+    Package utils {
+      Artifact config.ts
+      Artifact fetcher.ts
+      Artifact flashContext.tsx
+      Artifact gravatar.ts
+      Artifact userContext.tsx
+    }
+    
+    Artifact App.css
+    Artifact App.test.tsx
+    Artifact App.tsx
+    Artifact index.css
+    Artifact index.tsx
+    Artifact Layout.css
+    Artifact Layout.tsx
+    Artifact Login.tsx
+    Artifact logo.svg
+    Artifact PersonalTimeline.tsx
+    Artifact PublicTimeline.tsx
+    Artifact "react-app-env.d.ts"
+    Artifact Register.tsx
+    Artifact reportWebVitals.ts
+    Artifact Router.tsx
+    Artifact setupTests.ts
+    Artifact TimelineMessages.tsx
+    Artifact Twitbox.tsx
+    Artifact UserTimeline.tsx
+  }
+}
+
+@enduml
