@@ -17,14 +17,11 @@ jobs:
           mkdir build
           mv main.pdf build/main.pdf
         working-directory: Report
-
-
-       - name: Publish LaTeX
-         run : |
+        
+      - name: Publish LaTeX
+        run: |
           git config --global user.email "rune2690@hotmail.com"
           git config --global user.name "Chillhound"
           git add -f $PWD/Report/build/*.pdf
           git commit -m "WORKFLOW_COMMIT - Update PDFs [skip ci]"
           git push
-
-      
