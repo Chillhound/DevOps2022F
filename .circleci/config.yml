@@ -58,15 +58,17 @@ jobs:
 
 orbs:
   sonarcloud: sonarsource/sonarcloud@1.0.3
+  latex-orb: woltsu/latex-orb@1.0.0
+
 
 workflows:
   version: 2
+  compile:
+    jobs:
+      - latex-orb/compile:
+          file: /Report/main.tex
   build:
     jobs:
-      - Compile-report:
-          filters:
-            branches:
-              only: main
       - build-frontend:
           filters:
             branches:
