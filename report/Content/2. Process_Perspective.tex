@@ -1,0 +1,110 @@
+\section{Process' perspective}
+\subsection{Developer interaction \& Team organization}
+This section will introduce the way the developers chose to interact and communicate over the course. 
+
+\subsubsection{Discord}
+It was decided to use the communication platform \href{https://discord.com/}{\textit{Discord}}, since it is a that is great for facilitating discussions. The main communication line was in text channels, where various subjects was discussed such as; how to tackle different tasks and problems, plan collaboration sessions either physically or digitally, etc. Lastly, voice channels were used to execute collaboration session or further explain and share thoughts on the subjects in the text channels. Additionally, it was common to work in the weekends if the main task(s) had not been completed during the weekly exercise session. \\
+During these online collaboration sessions we used screen sharing as a way to program in pairs and sanity checking the work being done.
+
+\subsubsection{Physical meet-ups}
+On Tuesdays after lecture, the developers would meet-up at the weekly exercise session and focus on the concurrent weeks' workload. This was done so every team member has some insight in what was happening and could share thoughts and troubles that might occur during development of the project. Additionally, it is a good incentive getting most of the workload for the week done as fast as possible. Towards the end of the course a weekly status meeting was implemented to exchange experiences with other groups using similar tech-stacks \& technologies and have a forum to facilitate information sharing.
+
+\subsubsection{GitHub Projects}
+GitHub Projects was used for posting various tasks that were discussed on discord, functioning as a Kanban board. This gave an overview of who were working on what, since each developer could assign themselves to the tasks. Allowing the developers to organize accordingly.
+
+\subsection{Stages and tools in CI/CD chain}
+This section aims to show the different stages and tools used in the projects Continuous Integration and Continuous Deployment. Additionally, discussing any future plans of changes on the chain.
+
+\subsubsection{Tools}
+A variety of different tools and technologies were used in the \textit{Continuous Integration} (CI) chain. 
+
+The list below, summarizes tools and technologies used in the pipeline. 
+\begin{itemize}
+    \item Circle CI is a CD/CI service, and was used for the build server service.
+    \item Docker Containers and Docker hub as a public artifact registry.
+    \item SonarCloud used for static analysis.
+    \item BetterCodeHub evaluates the GitHub code base against 10 software engineering guidelines.
+    \item Digital Ocean a cloud server provider.
+\end{itemize}
+
+The configuration file for the pipeline is located here: https://raw.githubusercontent.com/Chillhound/DevOps2022F/main/.circleci/config.yml
+
+\subsubsection*{Static analysis}
+Included in the pipeline is also scanning of the frontend with SonarCloud and the backend with docker scan\footnote{https://docs.docker.com/engine/scan/}. \\
+Moreover Better Code Hub\footnote{https://bettercodehub.com/} is used to scan the GitHub repository against 10 engineering guidelines devised by the authority in software quality, Software Improvement Group (SIG). 
+
+\subsubsection{Stages}
+The projects' CI/CD setup is implemented utilizing CircleCI and includes 3 primary stages: 
+\begin{enumerate}
+    \item Build docker image with frontend, scan the frontend, and push to Docker Hub.
+    \item Build docker image backend, scan the image, and push to Docker Hub
+    \item SSH into our digital ocean droplet to stop running containers, pull newest images from Docker Hub and then start it all again with a Docker Compose file
+    \item \textcolor{red}{der kommer måske et step omkring rolling updates her}
+\end{enumerate}
+
+The reason behind SonarCloud only scans frontend is that static analysis works of C\# works differently. In order to scan C\# projects the system containing the MSBUILD needs to have a dedicated sonar-scanner installed. Since the projects' MSBUILD is being containerized it was decided that it would be easier to use the build-in feature \textit{Docker scan} from Docker, to do the static analysis instead of installing the sonar-scanner on the image each build.
+
+\subsubsection{Environment variable}
+The pipeline uses environment variables both in CircleCI and directly on our droplet to properly manage secrets like Docker Hub credentials, the database connection string and credentials for third party tools like Grafana, Elasticsearch and Kibana.
+
+\subsubsection{Future plans}
+At the moment, the CI/CD chain only deploys onto one droplet (primary) as seen in stage 3. Therefore, the project does not support for Continuous Deployment onto multiple droplets, this will have impact on an implementation with rolling updates, depending on the configuration. The thought was to deploy to a secondary droplet first and after that goes \textit{live}, redirect traffic from the primary droplet to the secondary. Shut-down the primary droplet and then deploy onto it, and when it goes back live and redirect traffic back to the primary.
+
+\subsection{Repository organization}
+We have used a mono-repository setup for this project, where the root of the repository contains files related to configuration like Dockerfiles, Vagrantfiles etc. as well as two folders designated for frontend and backend code respectively.
+
+
+\subsection{Applied branching strategy}
+The branching strategy uses the feature branching strategy. The branches is organised in a main branch that contains the code base for the current running system). Main is also the target of our CI pipeline. \\
+Feature branches are then branched out from main. When a feature is completed it gets merged into the main branch after it has been reviewed by a team member.
+
+\subsection{Applied development process and tools supporting it}
+During the project we have actively used GitHub issues to keep track of tasks both related to weekly assignments but also bugs, refactorings etc. that we have discovered or wanted to do ourselves. The issues is assigned labels to organize the priority, where the label \textit{important} is the most urgent and should be prioritised over a label like \textit{Nice-to-have}. To organise work on the issues the built-in Kanban board feature that GitHub provides is used during the development. This board helps the team with organizing the development, where the board shows what is being worked on by who.   
+
+\subsection{Monitoring}
+%How do monitor and precisely what do you monitor? \\
+To monitor the system the Prometheus package for dotnet, prometheues-net, is used. Prometheus exposes metrics from a ASP.net application. These metrics includes number of HTTP request in progress, number of received HTTP requests in total and duration of HTTP requests.
+\\
+A Grafana dashboard from the template: \href{https://grafana.com/grafana/dashboards/10915}{\textit{ASP.NET core - controller summary}} is used to visualize the monitoring information that Prometheus gatherers from our system. The dashboard shows the following informations:
+\begin{itemize}
+    \item Request received
+    \item Error rate
+    \item total request/s
+    \item Request duration
+    \item request in progress
+\end{itemize}
+% Billede af grafana kan muligvis indsættes her?
+
+\subsection{Logging}
+%What do you log in your systems and how do you aggregate logs?
+Our logging setup deviates from the popular ELK stack proposed in the course material and uses the following technologies. Instead of using Logstash the package Serilog is used in the system. Serilog has the same role as Logstash and handles the aggregation. this means, that Serilog parses and sends the data to ElasticSearch as Logstash would in a normal ELK stack.
+\begin{itemize}
+    \item Serilog\footnote{\url{https://serilog.net/}}
+    \item ElasticSearch
+    \item Kibana 
+\end{itemize}
+Serilog is imported as a dependency in the .NET project while both ElasticSearch and Kibana runs in their own respective Docker containers with volumes associated for persistence. The logs can have different log levels such as: debug, information, error, warning. These log levels can then be used for searching for logs with the specific level.
+The logging is centered around the simulator API and as such does not include e.g. the API used by the MiniTwit website.\\ 
+
+%- skriv evt. noget om at vi gerne vil have brugt logtyper men at serilog ikke har den funktionalitet (det ser dog ud %til at man nok kan opnå dette med enrichwithproperty... https://blog.datalust.co/serilog-tutorial/)
+
+
+
+
+\subsection{Security assessment}
+Based on our security assessment we have taken precautionary steps which concretely has resulted in DigitalOcean Two-Factor Authentication, enabling Dependabot and investigation of how we could add API Authentication. We have also talked about Security in relation to DDoS protection and developer-device security. The full Security assessment can be found in appendix \ref{app:SecurityAssessment}?
+
+\subsection{Scaling and load balancing}
+We choose to implement high-availability by using the configuration with Keepalived discussed in class, though with some modifications as the article\cite{KeepalivedUbuntu14} provided is deprecated. We have created our own updated version of Keepalived using Ubuntu 22 for documentation of the process and future use of others \footnote{\url{https://github.com/JacobMoller/Keepalived-DigitalOcean-Ubuntu-22.04/}}. \\
+This means that we have two droplets on DigitalOcean - one which is our Primary droplet that we have had since the beginning of the project and one secondary which is activated if the primary crashes. \\
+The primary droplet contains all monitoring and logging and the secondary does not. \\
+We agreed that, in case of an incident, the most important task is to be able to keep on serving clients, which is possible with this setup. We also agreed that the logs relevant to an incident i.e. before a crash, will come from the primary droplet and thus still be aggregated in this case.\\ If the secondary droplet goes active, we have an emergency situation that will need to be handled quickly and thus the lack of logging and monitoring is considered non-crucial. \\
+
+Another approach to this would be to have a three droplet setup where the logging is located on the third droplet. This would allow the primary and secondary droplet to log to one central place. We chose not to do this as it also creates a single point of failure at the logging-droplet.\\
+\textcolor{red}{her kan vi evt. kort nævne det med at det også er en emergency og derfor ikke vigtigt at det hele virker}
+
+We have created alerts by email using sSMTP \footnote{\url{https://wiki.debian.org/sSMTP}} and Mailutils \footnote{\url{https://mailutils.org/}} which executes when the Secondary droplet is registering that the primary droplet is down (and therefore takes the Floating IP). This allows us to be informed about this situation quickly and act upon it to recover and bring the service back to the Primary droplet.
+
+
+
+
