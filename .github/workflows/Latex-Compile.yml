@@ -16,7 +16,7 @@ jobs:
           
       - name: move pdf
         run: |
-          mkdir build
+          mkdir build -p
           mv main.pdf build/main.pdf
         working-directory: report
         
