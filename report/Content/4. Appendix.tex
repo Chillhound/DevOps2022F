@@ -1,4 +1,12 @@
 \appendix
+\section{Service-Level Agreement}
+\begin{figure}[H]
+    \label{app:SLA}
+    \centering
+    \includegraphics[width = \textwidth]{images/SLA.png}
+    \caption{Screenshot of Service-Level Agreement. For the full markdown file, see \url{https://github.com/Chillhound/DevOps2022F/blob/main/SLA.md}}
+\end{figure}
+
 \section{Licenses} \label{ssec:licences}
 .NET: MIT \url{https://github.com/microsoft/dotnet/blob/master/LICENSE} \\
 ASP.NET Core: MIT \url{https://github.com/dotnet/aspnetcore/blob/main/LICENSE.txt} \\
@@ -13,10 +21,36 @@ Grafana: AGPLv3 \url{https://grafana.com/licensing/} \\
 ElasticSearch: Apache 2.0 \url{https://www.elastic.co/pricing/faq/licensing} \\
 Kibana: Apache 2.0 \url{https://www.elastic.co/pricing/faq/licensing} \\
 
+\section{Results from bettercodehub.com}\label{app:bettercodehub}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.55]{images/BetterCodeHubResults.PNG}
+    \caption{Results from bettercodehub}
+\end{figure}
+
+\section{GitHub Board}\label{app:githubboard}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{images/githubBoard.PNG}
+    \caption{GitHub Project board}
+\end{figure}
+
+\newpage
 \section{Security Assessment}\label{app:SecurityAssessment}
 \input{./SecurityAssessment.tex}
 
+
+\section{Email alert}\label{app:alert}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = \textwidth]{images/alert.png}
+    \caption{Email alert setup with Keepalived and sSMTP}
+\end{figure}
+
 \section{Logs from attempts to access database}
-\begin{center}
-    \includegraphics[width = \textwidth]{images/database\_access\_logs.png}
-\end{center}
+\begin{figure}[H]
+    \label{app:DB logs}
+    \centering
+    \includegraphics[width = .9 \textwidth]{images/database\_access\_logs.png}
+    \caption{Logs from Docker Container}
+\end{figure}
