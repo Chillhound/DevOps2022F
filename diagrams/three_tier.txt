@@ -1,0 +1,24 @@
+@startuml
+'uncomment for straight lines
+'skinparam linetype ortho 
+top to bottom direction
+
+frame MiniTwit {
+  Component Frontend as fe
+  Component Simulator as sim
+  Component Controllers as con
+  Component DbContext as dbc
+  Component "Azure Database" as db
+  interface "           HTTP" as http
+  interface "                     SQL Server provider" as di
+}
+
+
+fe -down-( http
+sim -down-( http
+con -up- http
+con .down.> dbc
+dbc -down-( di
+db -up- di
+
+@enduml

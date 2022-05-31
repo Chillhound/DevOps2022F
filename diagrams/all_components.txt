@@ -1,0 +1,30 @@
+@startuml
+
+frame "minitwit droplet" {
+  title MiniTwit components
+  left to right direction
+  rectangle "Internal Docker network" #line.dashed {
+    Component "MiniTwit frontend" << Docker container >> {
+      [MiniTwit website] as W
+    }
+    
+    Component "MiniTwit backend" << Docker container >> {
+      top to bottom direction
+      [Simulator API] as SA
+      [MiniTwit API] as MA
+    }
+    
+    left to right direction
+    [ElasticSearch] << Docker container >> as E
+    [Kibana] << Docker container >> as K
+    [Grafana] << Docker container >> as G
+    [Prometheus] << Docker container >> as P
+    
+    MA -- W : HTTP
+    E -- K : HTTP 
+    P -- G : HTTP
+    E -- SA : HTTP
+    P -- SA : HTTP
+  }
+}
+@enduml

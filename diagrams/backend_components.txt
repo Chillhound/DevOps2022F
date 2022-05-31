@@ -1,0 +1,8 @@
+@startuml
+
+title MiniTwit backend
+
+[Simulator API] as SA
+[MiniTwit API] as MA
+
+@enduml

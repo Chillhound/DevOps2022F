@@ -1,0 +1,16 @@
+@startuml
+frame DigitalOcean {
+    Node "minitwit-secondary" {
+        Component "Backend-secondary" << Docker container >>
+        Component "Secondary-secondary" << Docker container >>
+    }
+    Node minitwit {
+        Component ElasticSearch << Docker container >>
+        Component Grafana << Docker container >>
+        Component Kibana << Docker container >>
+        Component Prometheus << Docker container >>
+        Component Backend << Docker container >>
+        Component Frontend << Docker container >>
+    }
+}
+@enduml

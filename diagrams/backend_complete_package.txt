@@ -1,0 +1,46 @@
+@startuml
+left to right direction
+
+Package Backend {
+  Package DataAcess {
+    Artifact MiniTwitContext.cs
+  }
+  
+  Package Domain {
+    Package DTO {
+      Artifact CreateUserDTO.cs
+      Artifact LoginDTO.cs
+      Artifact PublicMessageDTO.cs
+      Artifact UserMessagesDTO.cs
+    }
+    
+    Package Models {
+      Artifact Follower.cs
+      Artifact Message.cs
+      Artifact User.cs
+    }
+  }
+  
+  
+  Package MiniTwitAPI {
+    Package Controllers {
+      Artifact AccountController.cs
+      Artifact MessageController.cs
+      Artifact PublicController.cs
+      Artifact UserController.cs
+    }
+    
+    Package ControllerTests {
+      Artifact AccountControllerTests.cs
+      Artifact MessageControllerTests.cs
+      Artifact UserControllerTests.cs
+    }
+    
+    Package Service {
+      Artifact JwtTokenHandler.cs
+    }
+  
+  }
+}
+
+@enduml
