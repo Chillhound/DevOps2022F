@@ -1,0 +1,24 @@
+@startuml
+
+actor Simulator as sim
+sim -> Backend: POST /register \n - username
+Backend --> ElasticSearch: Log.Debug(Create user request with username: {username})
+'ElasticSearch --> Backend: OK
+Backend --> DB : Find user with {username}
+alt User exists 
+  Backend --> ElasticSearch: Log.Error(The user already exists in the db with: {username} for the createuser request
+  'ElasticSearch --> Backend: OK
+  Backend --> sim: 400 Bad request
+  
+else User doesn't exist
+  Backend --> DB: Create user {username}
+  Backend --> ElasticSearch: Log.Information(The user {username} has been created and saved to db)
+  'ElasticSearch --> Backend: OK
+  Backend --> Prometheus: Increment count of users
+  'Prometheus --> Backend: OK
+  
+sim <-- Backend: 204 No content
+
+end
+
+@enduml
