@@ -1,0 +1,75 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[paper=portrait,pagesize]{typearea}
+\usepackage{biblatex}
+\usepackage[english]{babel} % To obtain English text with the blindtext package
+\usepackage{blindtext}
+\usepackage{csquotes}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{float}
+
+\addbibresource{references.bib}
+
+\usepackage{xcolor}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage[margin=1.2in]{geometry}
+
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\pagenumbering{gobble}
+\title{MiniTwit Project \\DevOps, Software Evolution and Software Maintenance  \\
+IT University of Copenhagen \\ Course code: BSDSESM1KU}
+\date{1st of June 2022}
+\author{ Group F \\
+\begin{tabular}{l|l}
+    \textbf{Name} & \textbf{E-mail} \\ \hline
+    Jacob Møller Jensen & jacj@itu.dk      \\ \hline
+    Marcus Sebastian Emil Holmgaard & seho@itu.dk \\ \hline
+    Mikkel Møller Jensen & momj@itu.dk \\ \hline
+    Rune Engelbrecht Henriksen & rhen@itu.dk \\ \hline
+\end{tabular}
+}
+
+\begin{document}
+\maketitle
+
+\newpage
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+\include{Content/1. Systems_Perspective}
+\include{Content/2. Process_perspective}
+\include{Content/3. Lessons_Learned_Perspective}
+\printbibliography[title={References}]
+\include{Content/4. Appendix}
+
+\end{document}
