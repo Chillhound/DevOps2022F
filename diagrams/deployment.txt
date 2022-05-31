@@ -1,4 +1,5 @@
 @startuml
+
 frame "Deployment MiniTwit application" {
   Node Azure {
         Database Database [
@@ -14,13 +15,17 @@ frame "Deployment MiniTwit application" {
       [Frontend] as FS << Docker container >>
     }
     Node minitwit << DigitalOcean droplet >> {
-      Component ElasticSearch << Docker container >>
-      Component Grafana << Docker container >>
-      Component Kibana << Docker container >>
-      Component Prometheus << Docker container >>
       Component Backend << Docker container >>
       Component Frontend << Docker container >>
+      Component Kibana << Docker container >>
+      Component Grafana << Docker container >>
+      Component ElasticSearch << Docker container >>
+      Component Prometheus << Docker container >>
+      Component "grafana-storage" << Docker volume >>
+      Component "elk_elasticsearch_data" << Docker volume >>
+      Component "prome" << Docker volume>>
     }
   }
 }
+
 @enduml
